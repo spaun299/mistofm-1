@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Misto Fm - Deep Radio Station</title>
+        <meta name="HandheldFriendly" content="true"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <link href="https://fonts.googleapis.com/css?family=Poiret+One" rel="stylesheet">
+        <!--<link href="https://fonts.googleapis.com/css?family=Advent+Pro" rel="stylesheet">-->
+        <link href="https://fonts.googleapis.com/css?family=Advent+Pro|Exo+2" rel="stylesheet">
+        <link rel="icon" href="../static/assets/img/content/icon.png">
+        <link href="../static/css/bs/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="../static/css/deep.css">
+    </head>
+    <body>
+        <div class="page-loader">
+            <div class="vertical-align align-center">
+                <img src="../static/assets/img/loader/loader.gif" alt="" class="loader-img">
+            </div>
+        </div>
+        <!-- =============== START PLAYER ================ -->
+        <div class="main-music-player">
+            <a class="hide-player-button">
+                <i class="fa fa-plus"></i>
+                <i class="fa fa-minus"></i>
+            </a>
+            <div id="mesh-main-player" class="jp-jplayer" data-audio-src="http://93.75.217.95:8000" data-title="" data-artist="Live"></div>
+            <!--<div id="mesh-main-player" class="jp-jplayer" data-audio-src="http://93.75.217.95:8000" data-title="Never Enough (feat. Niya Wells) (CASSARA Remix)" data-artist="Satin Jackets"></div>-->
+            <div id="mesh-main-player-content" class="mesh-main-player" role="application" aria-label="media player">
+                <div class="container">
+                    <div class="row">
+                        <div class="left-player-side">
+                            <div class="mesh-play">
+                                <i class="fa fa-play"></i>
+                            </div>
+                            <div class="mesh-pause">
+                                <i class="fa fa-pause"></i>
+                            </div>
+                            <button id="playlist-toggle" class="jplayerButton">
+                                <span class="span-1"></span>
+                                <span class="span-2"></span>
+                                <span class="span-3"></span>
+                            </button>
+                        </div>
+                        <div class="center-side">
+                            <div class="mesh-current-time"></div>
+                            <div class="mesh-seek-bar">
+                                <div class="mesh-play-bar"></div>
+                            </div>
+                            <div class="mesh-duration"></div>
+                        </div>
+                        <div class="right-player-side">
+                            <div class="mesh-thumbnail">
+                                <img src="../static/assets/img/albums/cover3.jpg" alt="">
+                            </div>
+                            <div class="mesh-title"></div>
+                            <div class="mesh-artist"></div>
+                            <div id="search">
+                                <!--<a href="#" class="search-icon"><i class="fa fa-search"></i></a>-->
+                                <a href="#" class="utube-search"><i class="fa fa-youtube-play"></i></a>
+                                <a href="#"class="soundcloud-search"><i class="fa fa-soundcloud"></i></a>
+                                <a href="#" class="vk-search"><i class="fa fa-vk"></i></a>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- =============== END PLAYER ================ -->
+        <!-- =============== START PLAYLIST ================ -->
+        <div class="playlist-wrapper" id="playlist-wrapper">
+            <div class="jp-playlist container">
+                <div class="about-list clearfix">
+                    <span class="about-name">NAME</span>
+                    <span class="about-length">LENGTH</span>
+                    <span class="about-available">AVAILABLE ON</span>
+                </div>
+                <div class="trak-item" data-audio="http://93.75.217.95:8000" data-artist="Live" data-thumbnail="assets/img/albums/cover1.jpg" data-id="trak-200">
+                    <audio preload="metadata" src="http://93.75.217.95:8000" title="Soon"></audio>
+                    <!--<audio preload="metadata" src="http://93.75.217.95:8000" title="Never Enough (feat. Niya Wells) (CASSARA Remix)"></audio>-->
+                    <div class="additional-button">
+                        <div class="center-y-table">
+                            <a href="#">
+                                <i class="fa fa-headphones"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-apple"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-soundcloud"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="play-pause-button">
+                        <div class="center-y-table">
+                            <i class="fa fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="name-artist">
+                        <div class="center-y-table">
+                            <h2 class="mesh-listen"></h2>
+                        </div>
+                    </div>
+                    <time class="trak-duration">00:00</time>
+                </div>
+                <div class="trak-item" data-audio="../static/assets/audio/2.mp3" data-artist="Coldplay" data-thumbnail="../static/assets/img/albums/cover2.jpg" data-id="trak-201">
+                    <audio preload="metadata" src="../static/assets/audio/2.mp3" title="Magic (Sebastien Edit)"></audio>
+                    <div class="additional-button">
+                        <div class="center-y-table">
+                            <a href="#">
+                                <i class="fa fa-headphones"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-apple"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-soundcloud"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="play-pause-button">
+                        <div class="center-y-table">
+                            <i class="fa fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="name-artist">
+                        <div class="center-y-table">
+                            <h2>Coldplay - Magic (Sebastien Edit)</h2>
+                        </div>
+                    </div>
+                    <time class="trak-duration">00:00</time>
+                </div>
+                <div class="trak-item" data-audio="../static/assets/audio/3.mp3" data-artist="Kygo" data-thumbnail="../static/assets/img/albums/cover3.jpg" data-id="trak-201">
+                    <audio preload="metadata" src="../static/assets/audio/3.mp3" title="Cruise (feat. Andrew Jackson)"></audio>
+                    <div class="additional-button">
+                        <div class="center-y-table">
+                            <a href="#">
+                                <i class="fa fa-headphones"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-apple"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-soundcloud"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="play-pause-button">
+                        <div class="center-y-table">
+                            <i class="fa fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="name-artist">
+                        <div class="center-y-table">
+                            <h2>Kygo - Cruise (feat. Andrew Jackson)</h2>
+                        </div>
+                    </div>
+                    <time class="trak-duration">00:00</time>
+                </div>
+                <div class="trak-item" data-audio="../static/assets/audio/4.mp3" data-artist="LOYAL" data-thumbnail="../static/assets/img/albums/cover4.jpg" data-id="trak-201">
+                    <audio preload="metadata" src="../static/assets/audio/4.mp3" title="Blue & The Green (Edit)"></audio>
+                    <div class="additional-button">
+                        <div class="center-y-table">
+                            <a href="#">
+                                <i class="fa fa-headphones"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-apple"></i>
+                            </a>
+                            <a href="#">
+                                <i class="fa fa-soundcloud"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="play-pause-button">
+                        <div class="center-y-table">
+                            <i class="fa fa-play"></i>
+                        </div>
+                    </div>
+                    <div class="name-artist">
+                        <div class="center-y-table">
+                            <h2>LOYAL - Blue & The Green (Edit)</h2>
+                        </div>
+                    </div>
+                    <time class="trak-duration">00:00</time>
+                </div>
+            </div>
+        </div>
+        <!-- =============== END PLAYLIST ================ -->
+        <!-- =============== START TOP HEADER ================ -->
+        <div class="topHeader">
+            <div class="header">
+                <div class="rightTopHeader">
+                    <a class="open-menu">
+                        <span class="span-1"></span>
+                        <span class="span-2"></span>
+                        <span class="span-3"></span>
+                    </a>
+                </div>
+            </div>
+            <div class="menu-fixed-container">
+                <nav>
+                    <div class="x-filter">
+                        <span></span>
+                        <span></span>
+                    </div>
+                    <ul>
+                        <li>
+                            <a href="index.html">deep</a>
+                        </li>
+                        <li>
+                            <a href="#">lounge</a>
+                        </li>
+                        <li>
+                            <a href="#">chill</a>
+                        </li>
+                        <li>
+                            <a href="#">vibes</a>
+                        </li>
+                        <li>
+                            <a href="#">contacts</a>
+                        </li>
+                    </ul>
+                    <div class="x-filter">
+                        <span></span>
+                        <span></span>
+                    </div>
+                </nav>
+            </div>
+            <!-- =============== DEEP LOGO ================ -->
+            <div class="logo-container-top">
+                <a href="index.html">
+                    <!--<img src="assets/img/logo/whiteLogo.png" alt="Misto FM">-->
+                    <h4>MISTO FM</h4>
+                </a>
+            </div>
+            <!-- =============== END LOGO ================ -->
+        </div>
+        <!-- =============== END TOP HEADER ================ -->
+        <!-- =============== START BREADCRUMB ================ -->
+        <section class="no-mb">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="breadcrumb-fullscreen-parent phone-menu-bg">
+                        <div class="breadcrumb breadcrumb-fullscreen alignleft small-description overlay almost-black-overlay" data-stellar-background-ratio="0.5" data-stellar-vertical-offset="0">
+                            <!--style="background-image: url('assets/img/deepHomePage/star.jpg');"-->
+                            <div id="slider"></div>
+                            <div id="home" style="position: absolute;left: 50%;top: 50%;">
+                                <!--<div id="home" style="position: absolute;left: 0;top: 0;width: 100%;">-->
+                                <div class="intro-header">
+                                    <div class="height-full" style="height: 955px;">
+                                        <div class="col-sm-12">
+                                            <div class="deepTitle">
+                                                <h4>Fm</h4>
+                                                <div class="grid__item">
+                                                    <h1>
+                                                        <a class="link link-rotate" href="#">
+                                                            <span>M</span>
+                                                            <span>I</span>
+                                                            <span>S</span>
+                                                            <span>T</span>
+                                                            <span>O</span>
+                                                        </a>
+                                                    </h1>
+                                                </div>
+                                                <h4>Radio</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- =============== END BREADCRUMB ================ -->
+        <!-- =============== START ALBUM COVER SECTION ================ -->
+        <section class="padding albumsHome">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div class="sectionTitle paddingBottom">
+                            <span class="heading-t3"></span>
+                            <h2>
+                                <a href="#">Top Tracks</a>
+                            </h2>
+                            <span class="heading-b3"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-albums">
+                    <ul class="list-feature col-md-12 col-xs-12 col-sm-12">
+                        <li class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="album-icon">
+                                <span class="thumbs-album">
+                                    <a href="#">
+                                        <img width="270" height="270" src="../static/assets/img/content/albumCover.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1">
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="name">
+                                <h3>Kygo - Cruise (feat. Andrew Jackson)</h3>
+                                <p>Deep</p>
+                            </div>
+                        </li>
+                        <li class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="album-icon albumIcon1">
+                                <span class="thumbs-album">
+                                    <a href="#">
+                                        <img width="270" height="270" src="../static/assets/img/content/albumCover1.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1">
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="name">
+                                <h3>LOYAL - Blue & The Green (Edit)</h3>
+                                <p>Deep</p>
+                            </div>
+                        </li>
+                        <li class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="album-icon albumIcon2">
+                                <span class="thumbs-album">
+                                    <a href="#">
+                                        <img width="270" height="270" src="../static/assets/img/content/albumCover2.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1">
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="name">
+                                <h3>Coldplay - Magic (Sebastien Edit)</h3>
+                                <p>Deep</p>
+                            </div>
+                        </li>
+                        <li class="col-md-3 col-sm-3 col-xs-12">
+                            <div class="album-icon albumIcon3">
+                                <span class="thumbs-album">
+                                    <a href="#">
+                                        <img width="270" height="270" src="../static/assets/img/content/albumCover3.png" class="attachment-album-thumbnail wp-post-image" alt="album-cover-1">
+                                    </a>
+                                </span>
+                            </div>
+                            <div class="name">
+                                <h3>Sonya Kay - Зорянии Саундтрек (Slowed By Broukers)</h3>
+                                <p>Deep</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+        <!-- =============== START DEEP-BLOG SECTION ================ -->
+        <section class="padding background-properties blogHomeSection" style="background-image: url(assets/img/blog/blog-home2.jpg);">
+            <div class="container">
+                <div class="row">
+                    <div class="sectionTitle paddingBottom">
+                        <span class="heading-t3"></span>
+                        <h2>
+                            <a href="#">News</a>
+                        </h2>
+                        <span class="heading-b3"></span>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="blogBox">
+                            <div class="imgBox">
+                                <!--<img src="assets/img/blog/box-img.jpg" alt="box-img">-->
+                                <!--<div class="instaPost" style="background-image: url();"></div>-->
+                                <div class="instaPost"></div>
+                            </div>
+                            <div class="blogBoxContent">
+                                <div class="blogHeader">
+                                    <h1>
+                                        <a href="https://www.instagram.com/mistofm/">Instagram Post</a>
+                                    </h1>
+                                </div>
+                                <div class="admin-list clearfix">
+                                    <ul>
+                                        <li>
+                                            <a href="#">24 may 2017</a>
+                                            &nbsp;/&nbsp;
+                                        </li>
+                                        <li>
+                                            <a href="#">By Misto FM</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="blogParagraph">
+                                    <p>The endless musical flow of the best composition of deep house, house, nu disco, and indie dance.</p>
+                                </div>
+                                <div class="rmButton">
+                                    <a href="https://www.instagram.com/mistofm/">View Instagram</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="blogBox">
+                            <div class="videoBox">
+                                <iframe width="600" height="410" src="https://www.youtube.com/embed/pOdBf6ZWDTE?ecver=1" frameborder="0" allowfullscreen></iframe>
+                            </div>
+                            <div class="blogBoxContent">
+                                <div class="blogHeader">
+                                    <h1>
+                                        <a href="https://www.youtube.com/channel/UChLgcTJT-8fXzki4PGWFuyg">Youtube Post</a>
+                                    </h1>
+                                </div>
+                                <div class="admin-list clearfix">
+                                    <ul>
+                                        <li>
+                                            <a href="#">26 may 2017</a>
+                                            &nbsp;/&nbsp;
+                                        </li>
+                                        <li>
+                                            <a href="#">By Misto FM</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="blogParagraph">
+                                    <p>Deep - for those who need music like oxygen. It's a perfect music background for work, relaxation and travelling.</p>
+                                </div>
+                                <div class="rmButton">
+                                    <a href="https://www.youtube.com/channel/UChLgcTJT-8fXzki4PGWFuyg">View Channel</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="blogBox">
+                            <div class="soundcloudBox">
+                                <iframe height="203" src="https://w.soundcloud.com/player/?url=https%3A//api.soundcloud.com/tracks/316539444&amp;color=bb9b69&amp;show_artwork=false&amp;auto_play=false&amp;hide_related=false&amp;show_comments=false&amp;show_user=false&amp;show_reposts=false"></iframe>
+                            </div>
+                            <div class="blogBoxContent">
+                                <div class="blogHeader">
+                                    <h1>
+                                        <a href="https://soundcloud.com/mistofm">Soundcloud Post</a>
+                                    </h1>
+                                </div>
+                                <div class="admin-list clearfix">
+                                    <ul>
+                                        <li>
+                                            <a href="#">08 dec 2017</a>
+                                            &nbsp;/&nbsp;
+                                        </li>
+                                        <li>
+                                            <a href="#">By Misto FM</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="blogParagraph">
+                                    <p>The endless musical flow of the best composition of deep house, house, nu disco, and indie dance.</p>
+                                </div>
+                                <div class="rmButton">
+                                    <a href="https://soundcloud.com/mistofm">View Soundcloud</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- =============== END DEEP-BLOG SECTION ================ -->
+        <!-- =============== START FACEBOOK SECTION ================ -->
+        <section class="padding background-properties" style="background-image: url(assets/img/content/fbBgk1.jpg);">
+            <div class="facebook">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <div class="fbLogo">
+                                <a href="#">
+                                    <img src="../static/assets/img/content/fbLogo.jpg" alt="fbLogo" style="width: 67px;">
+                                </a>
+                                <a href="#" class="linkFb">@mistofm</a>
+                            </div>
+                            <p>
+                                Misto Fm Radio listeners can enjoy best new world music, best remixes, live studio Dj's sets, and of course, live translation from different club events. <a href="https://fb.me/mistofm" class="twitter-follow-button" data-show-count="false"><br>Follow @mistofm</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- =============== END FACEBOOK SECTION ================ -->
+        <!-- =============== START FOOTER ================ -->
+        <section style="background-color:#eeeeee;">
+            <div class="footer footerPadding">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <div class="copyFooter">
+                                <a href="https://fb.me/mistofm">&copy; Misto FM 2017 </a>
+                            </div>
+                        </div>
+                        <div class="col-sm-4">
+                            <nav class="social-icons">
+                                <ul class="clearfix">
+                                    <li>
+                                        <a href="#" class="icon-button shopIcon">
+                                            <i class="fa fa-facebook"></i>
+                                            <span></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="icon-button shopIcon">
+                                            <i class="fa fa-instagram"></i>
+                                            <span></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="icon-button shopIcon">
+                                            <i class="fa fa-soundcloud"></i>
+                                            <span></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="icon-button shopIcon">
+                                            <i class="fa fa-youtube-play"></i>
+                                            <span></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="icon-button shopIcon">
+                                            <i class="fa fa-apple"></i>
+                                            <span></span>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" class="icon-button shopIcon">
+                                            <i class="fa fa-android"></i>
+                                            <span></span>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="goTop back-to-top" id="back-to-top">
+                                <i class="fa fa-angle-up"></i>
+                                <a href="#">Go Top</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- =============== END FOOTER ================ -->
+        <script src="../static/js/jquery.js"></script>
+        <script src="../static/js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="../static/js/jquery.jplayer.js"></script>
+        <script src="../static/js/jPlayer.js"></script>
+        <script src="../static/js/plugins.js"></script>
+        <script src="../static/js/deep.js"></script>
+    </body>
+</html>
