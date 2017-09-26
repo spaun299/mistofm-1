@@ -1,0 +1,27 @@
+<script src="{{ url_for('static', filename='js/jquery-3.1.1.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/bootstrap.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/flexslider.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/spectragram.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/countdown.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/smooth-scroll.min.js')}}"></script>
+<script src="{{ url_for('static', filename='js/player.js')}}"></script>
+<!--<script src="{{ url_for('static', filename='js/google-map.js')}}"></script>-->
+<script src="{{ url_for('static', filename='js/scripts.js')}}"></script>
+<script>
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId      : '318530685222946',
+      xfbml      : true,
+      version    : 'v2.10'
+    });
+    FB.AppEvents.logPageView();
+  };
+
+  (function(d, s, id){
+     var js, fjs = d.getElementsByTagName(s)[0];
+     if (d.getElementById(id)) {return;}
+     js = d.createElement(s); js.id = id;
+     js.src = "//connect.facebook.net/en_US/sdk.js";
+     fjs.parentNode.insertBefore(js, fjs);
+   }(document, 'script', 'facebook-jssdk'));
+</script>

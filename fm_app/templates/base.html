@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+    {% include 'head.html' %}
+</head>
+    <body class="scroll-assist" data-title="deep-page">
+
+    {% include 'loader.html' %}
+    {% block content %}{% endblock %}
+
+
+    {% block imports %}{% endblock %}
+    {% include 'imports.html' %}
+    </body>
+</html>
