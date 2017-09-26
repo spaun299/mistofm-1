@@ -37,7 +37,7 @@ def load_database():
         if not field:
             raise ValueError("Please specify '%s' in config file" % field)
     engine = create_engine(get_database_uri(*db_config_fields),
-                           echo=True if config.DEBUG else False)
+                           echo=False)
     g.sql_connection = engine.connect()
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
