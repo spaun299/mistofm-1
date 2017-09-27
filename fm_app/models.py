@@ -51,4 +51,4 @@ class Image(Base):
         os.remove(config.IMAGES_PATH + image_name)
 
     def change_upload_image_url(self):
-        self.image_url = config.IMAGES_PATH + self.id
+        self.image_url = config.IMAGES_PATH + str(self.id)
