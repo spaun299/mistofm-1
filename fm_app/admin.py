@@ -1,9 +1,11 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
-from flask import Markup
+from flask import Markup, g, flash
 import config
+from werkzeug.utils import secure_filename
 from flask import current_app as app
+import random
 
 
 class AdminView(ModelView):
@@ -31,9 +33,48 @@ class ImageView(AdminView):
     column_list = ['image_url', 'stored_on_server']
     create_modal = True
     edit_modal = True
+
+    def get_file_name(self, file_data):
+        tmp_filename = str(random.getrandbits(128))
+        g.tmp_filename = tmp_filename
+        return tmp_filename
+
     form_extra_fields = {
-        'image_data': ImageUploadField("Image", base_path=config.IMAGES_PATH)
+        'image_data': ImageUploadField("Image", base_path=config.IMAGES_PATH, namegen=get_file_name)
     }
+
+    def create_model(self, form):
+        """
+            Create model from form.
+
+            :param form:
+                Form instance
+        """
+        try:
+            model = self.model()
+            form.populate_obj(model)
+            self.session.add(model)
+            self._on_model_change(form, model, True)
+            tmp_filename = getattr(g, 'tmp_filename')
+            if model.image_url == 'Uploaded' and not tmp_filename:
+                flash("Please provide image url or upload it!")
+            elif model.image_url != 'Uploaded' and tmp_filename:
+                flash("Choose one option: provide image url or upload own. "
+                      "Url will be used as picture.")
+            if tmp_filename:
+                self.session.flush()
+                model.rename_filename_to_id(g.tmp_filename)
+                model.change_upload_image_url()
+                self.session.commit()
+                del g.tmp_filename
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                pass
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, True)
+        return model
 
     def _image_preview(self, context, model, name):
         markup_string = '<img src="%s" height=100>' % model.image_url

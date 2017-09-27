@@ -3,6 +3,9 @@ from sqlalchemy.orm import relationship, backref
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table
 import datetime
+import config
+import os
+
 
 Base = declarative_base()
 
@@ -35,7 +38,17 @@ class Image(Base):
     image_url = Column(String)
     stored_on_server = Column(Boolean, default=False)
 
-    def __init__(self, image_url=None, stored_on_server=False, image_data=None):
-
+    def __init__(self, image_url="Uploaded", stored_on_server=False, image_data=None):
+        print(image_url)
         self.image_url = image_url
         self.stored_on_server = stored_on_server
+
+    def rename_filename_to_id(self, tmp_filename):
+        folder_path = config.IMAGES_PATH
+        os.rename(folder_path + tmp_filename, folder_path + str(self.id))
+
+    def delete_image(self, image_name):
+        os.remove(config.IMAGES_PATH + image_name)
+
+    def change_upload_image_url(self):
+        self.image_url = config.IMAGES_PATH + self.id
