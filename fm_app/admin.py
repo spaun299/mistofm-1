@@ -35,12 +35,11 @@ class ImageView(AdminView):
     edit_modal = True
 
     def get_file_name(self, file_data):
-        tmp_filename = str(random.getrandbits(128))
-        g.tmp_filename = tmp_filename
-        return tmp_filename
+        return app.root_path + g.image_url
 
     form_extra_fields = {
-        'image_data': ImageUploadField("Image", base_path=config.IMAGES_PATH, namegen=get_file_name)
+        'image_data': ImageUploadField("Image", base_path=config.IMAGES_PATH,
+                                       namegen=get_file_name)
     }
 
     def create_model(self, form):
@@ -52,21 +51,32 @@ class ImageView(AdminView):
         """
         try:
             model = self.model()
-            form.populate_obj(model)
-            self.session.add(model)
-            self._on_model_change(form, model, True)
-            tmp_filename = getattr(g, 'tmp_filename')
-            if model.image_url == 'Uploaded' and not tmp_filename:
+            uploaded = bool(form.data.get('image_data'))
+            model.image_url = form.data.get('image_url')
+            if not (model.image_url or uploaded):
                 flash("Please provide image url or upload it!")
-            elif model.image_url != 'Uploaded' and tmp_filename:
+                return False
+            elif model.image_url and uploaded:
                 flash("Choose one option: provide image url or upload own. "
-                      "Url will be used as picture.")
-            if tmp_filename:
+                      "Url will be used as a picture.")
+                uploaded = False
+                del form.data['image_data']
+            self.session.add(model)
+            if uploaded:
+                model.image_url = "tmp"
+                model.stored_on_server = True
                 self.session.flush()
-                model.rename_filename_to_id(g.tmp_filename)
-                model.change_upload_image_url()
-                self.session.commit()
-                del g.tmp_filename
+                try:
+                    file_ext = form.data['image_data'].filename.split('.')[-1]
+                except IndexError:
+                    file_ext = 'png'
+                model.image_url = model.get_stored_image_url(file_ext)
+                g.image_url = model.image_url
+                form.data['image_url'] = model.image_url
+                form.image_data.populate_obj(model, 'image_data')
+                self.session.add(model)
+            self._on_model_change(form, model, True)
+            self.session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 pass
