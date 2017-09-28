@@ -56,7 +56,15 @@ def get_db_session():
 
 
 def init_admin_panel(app):
-    admin = Admin(app, name="Mistofm", template_mode="bootstrap3")
+    admin = Admin(name="Mistofm", template_mode="bootstrap3")
+    admin.init_app(app)
     db_session = get_db_session()
+
+    # remove db session each time when close connection in
+    # order to refresh data and get new session
+    @admin.app.teardown_request
+    def app_teardown(resp):
+        db_session.remove()
+        return resp
     admin.add_view(StationView(Station, db_session))
     admin.add_view(ImageView(Image, db_session))

@@ -3,20 +3,29 @@ from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
 from flask import Markup, g, flash
 import config
-from werkzeug.utils import secure_filename
 from flask import current_app as app
-import random
 
 
 class AdminView(ModelView):
     form_excluded_columns = ['cr_tm', 'stored_on_server']
 
+    @staticmethod
+    def _image_preview(obj, context, model, name, img_height=100):
+        markup_string = '<img src="{url}" height={height}>'.format(url=model.image_url,
+                                                                   height=img_height)
+        return Markup(markup_string)
+
 
 class StationView(AdminView):
+
     column_editable_list = ['name']
     column_searchable_list = ['name']
     column_formatters = {'description_html': lambda view, context, model,
-                                                    name: Markup(model.description_html)}
+                                                    name: Markup(model.description_html),
+                         'images': lambda view, context, model,
+                                                    name: AdminView._image_preview(
+                             view, context, model, name, 40
+                         )}
 
 
 class CustomizableField(Field):
@@ -30,17 +39,16 @@ class CustomizableField(Field):
 
 
 class ImageView(AdminView):
-    column_list = ['image_url', 'stored_on_server']
+    column_list = ['image_url', 'name', 'stored_on_server']
     create_modal = True
     edit_modal = True
 
     def get_file_name(self, file_data):
-        tmp_filename = str(random.getrandbits(128))
-        g.tmp_filename = tmp_filename
-        return tmp_filename
+        return app.root_path + g.image_url
 
     form_extra_fields = {
-        'image_data': ImageUploadField("Image", base_path=config.IMAGES_PATH, namegen=get_file_name)
+        'image_data': ImageUploadField("Image", base_path=config.IMAGES_PATH,
+                                       namegen=get_file_name)
     }
 
     def create_model(self, form):
@@ -52,21 +60,33 @@ class ImageView(AdminView):
         """
         try:
             model = self.model()
-            form.populate_obj(model)
-            self.session.add(model)
-            self._on_model_change(form, model, True)
-            tmp_filename = getattr(g, 'tmp_filename')
-            if model.image_url == 'Uploaded' and not tmp_filename:
+            uploaded = bool(form.data.get('image_data'))
+            model.image_url = form.data.get('image_url')
+            model.name = form.data.get('name')
+            if not (model.image_url or uploaded):
                 flash("Please provide image url or upload it!")
-            elif model.image_url != 'Uploaded' and tmp_filename:
+                return False
+            elif model.image_url and uploaded:
                 flash("Choose one option: provide image url or upload own. "
-                      "Url will be used as picture.")
-            if tmp_filename:
+                      "Url will be used as a picture.")
+                uploaded = False
+                del form.data['image_data']
+            self.session.add(model)
+            if uploaded:
+                model.image_url = "tmp"
+                model.stored_on_server = True
                 self.session.flush()
-                model.rename_filename_to_id(g.tmp_filename)
-                model.change_upload_image_url()
-                self.session.commit()
-                del g.tmp_filename
+                try:
+                    file_ext = form.data['image_data'].filename.split('.')[-1]
+                except IndexError:
+                    file_ext = 'png'
+                model.image_url = model.get_stored_image_url(file_ext)
+                g.image_url = model.image_url
+                form.data['image_url'] = model.image_url
+                form.image_data.populate_obj(model, 'image_data')
+                self.session.add(model)
+            self._on_model_change(form, model, True)
+            self.session.commit()
         except Exception as ex:
             if not self.handle_view_exception(ex):
                 pass
@@ -75,10 +95,6 @@ class ImageView(AdminView):
         else:
             self.after_model_change(form, model, True)
         return model
-
-    def _image_preview(self, context, model, name):
-        markup_string = '<img src="%s" height=100>' % model.image_url
-        return Markup(markup_string)
 
     form_edit_rules = [
         CustomizableField('stations', field_args={
@@ -93,5 +109,5 @@ class ImageView(AdminView):
         }
     }
     column_formatters = {
-        "image_url": _image_preview
+        "image_url": AdminView._image_preview
     }
