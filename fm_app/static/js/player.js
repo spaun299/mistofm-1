@@ -203,6 +203,11 @@ $(document).ready(function() {
         
     };
 
+	$('#np-volume').on('input propertychange', function() {
+		var val = ($(this).val() - $(this).attr('min')) / ($(this).attr('max') - $(this).attr('min'));
+        audio.volume = val;
+	});
+
 
 });
 
