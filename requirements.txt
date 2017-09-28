@@ -1,0 +1,6 @@
+flask==0.12.2
+sqlalchemy>=1.1
+psycopg2
+alembic>=0.9
+flask-admin>=1.5
+pillow>=4.2.1

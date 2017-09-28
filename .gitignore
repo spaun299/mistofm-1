@@ -1,0 +1,6 @@
+.venv*/
+.idea/
+*.pyc
+*.log
+secret_data.py
+alembic_secret.ini
