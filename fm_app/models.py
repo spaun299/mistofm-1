@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table
 import datetime
@@ -30,18 +30,26 @@ class Station(Base):
         self.description_html = description_html
         self.cr_tm = datetime.datetime.now()
 
+    def __repr__(self):
+        return self.name
+
 
 class Image(Base):
 
     __tablename__ = 'image'
     id = Column(Integer, primary_key=True)
     image_url = Column(String)
+    name = Column(String)
     stored_on_server = Column(Boolean, default=False)
 
-    def __init__(self, image_url=None, stored_on_server=False, image_data=None):
+    def __init__(self, image_url=None, name=None, stored_on_server=False, image_data=None):
         self.image_url = image_url
+        self.name = name
         self.stored_on_server = stored_on_server
         self.image_data = image_data
+
+    def __repr__(self):
+        return self.image_url
 
     def rename_filename_to_id(self, tmp_filename):
         folder_path = config.IMAGES_PATH

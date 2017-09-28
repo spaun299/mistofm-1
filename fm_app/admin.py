@@ -3,20 +3,29 @@ from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
 from flask import Markup, g, flash
 import config
-from werkzeug.utils import secure_filename
 from flask import current_app as app
-import random
 
 
 class AdminView(ModelView):
     form_excluded_columns = ['cr_tm', 'stored_on_server']
 
+    @staticmethod
+    def _image_preview(obj, context, model, name, img_height=100):
+        markup_string = '<img src="{url}" height={height}>'.format(url=model.image_url,
+                                                                   height=img_height)
+        return Markup(markup_string)
+
 
 class StationView(AdminView):
+
     column_editable_list = ['name']
     column_searchable_list = ['name']
     column_formatters = {'description_html': lambda view, context, model,
-                                                    name: Markup(model.description_html)}
+                                                    name: Markup(model.description_html),
+                         'images': lambda view, context, model,
+                                                    name: AdminView._image_preview(
+                             view, context, model, name, 40
+                         )}
 
 
 class CustomizableField(Field):
@@ -86,10 +95,6 @@ class ImageView(AdminView):
             self.after_model_change(form, model, True)
         return model
 
-    def _image_preview(self, context, model, name):
-        markup_string = '<img src="%s" height=100>' % model.image_url
-        return Markup(markup_string)
-
     form_edit_rules = [
         CustomizableField('stations', field_args={
             'readonly': False
@@ -103,5 +108,5 @@ class ImageView(AdminView):
         }
     }
     column_formatters = {
-        "image_url": _image_preview
+        "image_url": AdminView._image_preview
     }
