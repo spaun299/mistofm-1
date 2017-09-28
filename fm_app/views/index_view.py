@@ -14,8 +14,9 @@ def station(name=None):
                 station_obj = st
                 break
     else:
-        station_obj = stations[0]
-        station_obj.description_html = Markup(station_obj.description_html)
+        if stations:
+            station_obj = stations[0]
+            station_obj.description_html = Markup(station_obj.description_html)
     if not station_obj:
         abort(404)
     return render_template('index.html', station=station_obj,
