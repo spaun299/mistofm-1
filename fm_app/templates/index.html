@@ -4,10 +4,11 @@
         <div class="main-container">
             <section class="mistofm cover fullscreen image-slider slider-arrow-controls controls-inside">
                 <ul class="slides">
+                    {% for img in station.images %}
 
                     <li class="image-bg pt-xs-240 pb-xs-240">
                         <div class="background-image-holder">
-                            <img alt="Misto Fm" class="background-image" src="http://i.imgur.com/Zc20VWD.jpg"/>
+                            <img alt="Misto Fm" class="background-image" src={{ img.image_url }}/>
                         </div>
                         <div class="align-bottom">
                             <div class="row">
@@ -22,136 +23,8 @@
                             </div>
                         </div>
                     </li>
-    
-                    <li class="image-bg pt-xs-240 pb-xs-240">
-                        <div class="background-image-holder">
-                            <img alt="Misto Fm" class="background-image" src="http://i.imgur.com/8HWG0NK.jpg"/>
-                        </div>
-                        <div class="align-bottom">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <hr class="mb24">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 col-xs-12 text-center-xs mb-xs-24"></div>
-                                <div class="col-md-4 hidden-sm hidden-xs"></div>
-                                <div class="col-md-5 col-sm-6 col-xs-12 text-right text-center-xs"></div>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    <li class="image-bg pt-xs-240 pb-xs-240">
-                        <div class="background-image-holder">
-                            <img alt="Misto Fm" class="background-image" src="http://i.imgur.com/tZX5Knq.jpg"/>
-                        </div>
-                        <div class="align-bottom">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <hr class="mb24">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 col-xs-12 text-center-xs mb-xs-24">
-                                    <div class="square-line">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 hidden-sm hidden-xs">
-                                </div>
-                                <div class="col-md-5 col-sm-6 col-xs-12 text-right text-center-xs">
-                                </div>
-                            </div>
-                        </div>
-                    </li>
+                    {% endfor %}
 
-                    <li class="image-bg pt-xs-240 pb-xs-240">
-                        <div class="background-image-holder">
-                            <img alt="Misto Fm" class="background-image" src="http://i.imgur.com/tn2V3PY.jpg"/>
-                        </div>
-                        <div class="align-bottom">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <hr class="mb24">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 col-xs-12 text-center-xs mb-xs-24">
-                                </div>
-                                <div class="col-md-4 hidden-sm hidden-xs">
-                                </div>
-                                <div class="col-md-5 col-sm-6 col-xs-12 text-right text-center-xs">
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    <li class="image-bg pt-xs-240 pb-xs-240">
-                        <div class="background-image-holder">
-                            <img alt="Misto Fm" class="background-image" src="http://i.imgur.com/kgIdcDA.jpg"/>
-                        </div>
-                        <div class="align-bottom">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <hr class="mb24">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 col-xs-12 text-center-xs mb-xs-24">
-                                </div>
-                                <div class="col-md-4 hidden-sm hidden-xs">
-                                </div>
-                                <div class="col-md-5 col-sm-6 col-xs-12 text-right text-center-xs">
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    <li class="image-bg pt-xs-240 pb-xs-240">
-                        <div class="background-image-holder">
-                            <img alt="Misto Fm" class="background-image" src="http://i.imgur.com/x9D8JkY.jpg"/>
-                        </div>
-                        <div class="align-bottom">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <hr class="mb24">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 col-xs-12 text-center-xs mb-xs-24">
-                                    <div class="square-line">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 hidden-sm hidden-xs">
-                                </div>
-                                <div class="col-md-5 col-sm-6 col-xs-12 text-right text-center-xs">
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    
-                    <li class="image-bg pt-xs-240 pb-xs-240">
-                        <div class="background-image-holder">
-                            <img alt="Misto Fm" class="background-image" src="http://i.imgur.com/Jfx6l8o.jpg"/>
-                        </div>
-                        <div class="align-bottom">
-                            <div class="row">
-                                <div class="col-sm-12">
-                                    <hr class="mb24">
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-3 col-sm-6 col-xs-12 text-center-xs mb-xs-24">
-                                    <div class="square-line">
-                                    </div>
-                                </div>
-                                <div class="col-md-4 hidden-sm hidden-xs">
-                                </div>
-                                <div class="col-md-5 col-sm-6 col-xs-12 text-right text-center-xs">
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    
                     <div class="container">
                         <div class="row">
                             <div class="bottom-player-side col-md-12">
@@ -163,7 +36,7 @@
                                     	</div>
                                     </div>
                                     <audio id="audio-player" preload="auto" data-album-src="{{ url_for('static', filename='img/logo_album.png')}}" title="Misto FM Live">
-                                        <source src="http://94.23.66.114:8122/;stream/1" type="audio/mpeg">
+                                        <source src="{{ station.stream_url }}" type="audio/mpeg">
                                     </audio>
                                 </div>
                                 <div class="bottom-player-block col-md-8 col-xs-9">

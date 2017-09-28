@@ -39,7 +39,7 @@ class Image(Base):
     __tablename__ = 'image'
     id = Column(Integer, primary_key=True)
     image_url = Column(String)
-    name = Column(String)
+    name = Column(String, unique=True)
     stored_on_server = Column(Boolean, default=False)
 
     def __init__(self, image_url=None, name=None, stored_on_server=False, image_data=None):
@@ -49,7 +49,7 @@ class Image(Base):
         self.image_data = image_data
 
     def __repr__(self):
-        return self.image_url
+        return self.name or self.image_url
 
     def rename_filename_to_id(self, tmp_filename):
         folder_path = config.IMAGES_PATH

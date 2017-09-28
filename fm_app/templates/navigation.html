@@ -3,7 +3,7 @@
     <nav class="absolute transparent">
         <div class="nav-bar">
             <div class="module left">
-                <a href="index.html">
+                <a href="{{ url_for('index.station') }}">
                     <svg class="logo-dark" width="200px" height="200px" viewBox="0 0 200 200">
                         <g class="letter one">
                           <polygon class="piece one" points="9.2,10.7 6.9,8 6.9,22.6 9.2,22.6 9.2,14.2"/>
@@ -103,23 +103,12 @@
             <div class="module-group right">
                 <div class="module left">
                     <ul class="menu">
-                        <li class="menu-link active">
-                            <a href="#">Deep
+                        {% for station_name in stations %}
+                        <li class="menu-link {% if station_name == station.name %}active{% endif %}">
+                            <a href="{{ url_for('index.station', name=station_name) }}">{{ station_name }}
                             </a>
                         </li>
-                        <li class="menu-link">
-                            <a href="juda.html">Juda
-                            </a>
-                        </li>
-                        <li class="menu-link">
-                            <a href="beats.html">Beats
-                            </a>
-                        </li>
-                        <li class="menu-link">
-                            <a href="delmar.html">Del Mar
-                            </a>
-
-                        </li>
+                        {% endfor %}
                     </ul>
                 </div>
                 <div class="module widget-handle add-drop-widget-handle left">

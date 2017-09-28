@@ -39,7 +39,7 @@ class CustomizableField(Field):
 
 
 class ImageView(AdminView):
-    column_list = ['image_url', 'stored_on_server']
+    column_list = ['image_url', 'name', 'stored_on_server']
     create_modal = True
     edit_modal = True
 
@@ -62,6 +62,7 @@ class ImageView(AdminView):
             model = self.model()
             uploaded = bool(form.data.get('image_data'))
             model.image_url = form.data.get('image_url')
+            model.name = form.data.get('name')
             if not (model.image_url or uploaded):
                 flash("Please provide image url or upload it!")
                 return False
