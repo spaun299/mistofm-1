@@ -1,3 +1,7 @@
-.venv*
-.idea
+.venv*/
+.idea/
 *.pyc
+*.log
+secret_data.py
+alembic_secret.ini
+fm_app/static/img/uploaded/*
