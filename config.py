@@ -10,3 +10,4 @@ LOG_PATH = "mistofm.log"
 LOG_ROTATE_COUNT = 5
 SECRET_KEY = secret_data.SECRET_KEY
 IMAGES_PATH = "static/img/uploaded/"
+ADMIN_URL_PREFIX = "/admin_mistofm"

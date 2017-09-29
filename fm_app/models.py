@@ -70,14 +70,16 @@ class Image(Base):
 class User(Base):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True)
-    nickname = Column(String, unique=True, nullable=False)
+    username = Column(String, unique=True, nullable=False)
     password = Column(String, nullable=False)
+    email = Column(String)
     user_type = Column(String, default="admin")
 
-    def __init__(self, nickname=None, password=None, user_type=None):
+    def __init__(self, nickname=None, password=None, user_type=None, email=None):
         self.nickname = nickname
         self.password = password
         self.user_type = user_type
+        self.email = email
 
     @property
     def is_authenticated(self):
@@ -90,6 +92,9 @@ class User(Base):
     @property
     def is_anonymous(self):
         return False
+
+    def has_confirmed_email(self):
+        return True
 
     def get_id(self):
         return self.id
