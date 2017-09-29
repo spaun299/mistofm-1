@@ -65,3 +65,31 @@ class Image(Base):
     def change_upload_image_url(self):
         self.image_url = config.IMAGES_PATH + str(self.id)
         self.stored_on_server = True
+
+
+class User(Base):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True)
+    nickname = Column(String, unique=True, nullable=False)
+    password = Column(String, nullable=False)
+    user_type = Column(String, default="admin")
+
+    def __init__(self, nickname=None, password=None, user_type=None):
+        self.nickname = nickname
+        self.password = password
+        self.user_type = user_type
+
+    @property
+    def is_authenticated(self):
+        return True
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return self.id

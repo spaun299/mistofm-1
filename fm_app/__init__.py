@@ -1,13 +1,16 @@
 from flask import Flask, g
 from flask_admin import Admin
+from flask.ext.login import LoginManager, current_user
+from flask_user import login_required, UserManager, SQLAlchemyAdapter
 import config
 from .blueprints import register_blueprints
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from utils import get_database_uri
-from .models import Station, Image
+from .models import Station, Image, User
 from .admin import StationView, ImageView
 
 
@@ -16,9 +19,24 @@ def init_app():
     app.config.from_object(config)
     configure_logger(app)
     app.before_request(load_db_session)
+    app.before_request(get_current_user)
     register_blueprints(app)
+    login_manager = LoginManager(app)
+    login_manager.user_loader(load_user)
+    user_db = SQLAlchemy(app)
+    db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
+                                                 bases=(user_db.Model, User)))
+    user_manager = UserManager(db_adapter, app)
     init_admin_panel(app)
     return app
+
+
+def load_user(_id):
+    return g.db.query(User).filter_by(id=int(_id)).one()
+
+
+def get_current_user():
+    g.user = current_user
 
 
 def configure_logger(app):
