@@ -1,10 +1,18 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
-from flask import Markup, g, flash
+from flask_admin.base import AdminIndexView
+from flask_admin import expose
+from flask import Markup, g, flash, current_app as app, redirect, url_for
 import config
-from flask import current_app as app
+from flask_user import current_user, login_required
 
+
+class IndexView(AdminIndexView):
+    @expose()
+    @login_required
+    def index(self):
+        return self.render(self._template)
 
 class AdminView(ModelView):
     form_excluded_columns = ['cr_tm', 'stored_on_server']
@@ -14,6 +22,12 @@ class AdminView(ModelView):
         markup_string = '<img src="{url}" height={height}>'.format(url=model.image_url,
                                                                    height=img_height)
         return Markup(markup_string)
+
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_type == 'admin'
+
+    def inaccessible_callback(self, name, **kwargs):
+        return redirect(url_for('index.station'))
 
 
 class StationView(AdminView):
