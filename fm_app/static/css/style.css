@@ -141,11 +141,12 @@ p, span {
 a, a:visited, a:focus, a:active, a:hover {
     text-decoration: none;
     outline: none;
+    color: #fff;
 }
 
 a {
     font-weight: 600;
-    color: #47b475;
+    color: #fff;
     transition: all 0.5s ease;
     -webkit-transition: all 0.5s ease;
     -moz-transition: all 0.5s ease;
@@ -240,7 +241,6 @@ footer {
     text-transform: uppercase;
     letter-spacing: 1px;
     border-radius: 0;
-    color: #47b475;
     text-align: center;
     transition: all 0.3s ease;
     -webkit-transition: all 0.3s ease;
@@ -250,7 +250,7 @@ footer {
 }
 
 .btn:hover {
-    background: #47b475;
+    /*background: #ccc;*/
     color: #fff;
 }
 
@@ -1515,25 +1515,6 @@ img {
     margin-bottom: 24px;
 }
 
-.image-slider.height-70 .slides li {
-    height: 70vh;
-    min-height: 600px;
-}
-
-@media all and (max-width: 767px) {
-    .image-slider.height-70 .slides li {
-        height: auto;
-        min-height: none;
-        padding: 80px 0;
-    }
-
-    .image-slider.height-70 .v-align-transform {
-        top: 0;
-        transform: none;
-        -webkit-transform: none;
-    }
-}
-
 .flex-direction-nav a.flex-next {
     right: 24px;
 }
@@ -2386,4 +2367,121 @@ footer .btn.active, footer .btn:active {
         opacity: 0.5;
         background: #000;
     }
+}
+
+/*----- Page 404 ------*/
+
+.v-align-transform {
+    position: relative;
+    transform: translate3d(0, -50%, 0);
+    -webkit-transform: translate3d(0, -50%, 0);
+    top: 50%;
+    z-index: 2;
+}
+
+@media all and (max-width: 767px) {
+    .mb-xs-12 {
+        margin-bottom: 12px;
+    }
+}
+
+.icon {
+    font-size: 64px;
+    display: inline-block;
+}
+
+.icon.icon-lg {
+    font-size: 60px;
+    color: #ccc;
+}
+
+@media all and (max-width: 767px) {
+    .icon {
+        font-size: 48px;
+    }
+
+    .icon-lg {
+        font-size: 64px;
+    }
+}
+
+.embelish-icons {
+    position: absolute;
+    top: 50%;
+    transform: translate3d(0, -50%, 0);
+    -webkit-transform: translate3d(0, -50%, 0);
+    -moz-transform: translate3d(0, -50%, 0);
+    transform: scale(10);
+    -webkit-transform: scale(10);
+    left: 50%;
+    opacity: 0.05;
+    z-index: -1;
+}
+
+h1.large {
+    font-size: 72px;
+    line-height: 80px;
+    font-weight: 100;
+    color: #ccc;
+    font-family: "Raleway", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.no-page p {
+    color: #ccc;
+}
+
+@media all and (max-width: 990px) {
+    h1.large {
+        font-size: 56px;
+        line-height: 64px;
+    }
+}
+
+@media all and (max-width: 767px) {
+    h1, h1.large, .h1 {
+        font-size: 32px;
+        line-height: 40px;
+        font-weight: 300;
+    }
+}
+
+
+.no-page a:hover {
+    opacity: 0.7;
+}
+
+.no-page .btn {
+    border-right: 1px solid #ccc;
+    color: #ccc;
+    font-weight: 500;
+    padding: 0 25px;
+    line-height: 38px;
+    min-width: 85px;
+    margin-right: 0px;
+}
+
+.no-page .btn:last-child {
+    border: none;
+}
+
+@media all and (max-width: 418px) {
+    .no-page .btn {
+        padding: 0px 15px;
+        min-width: 68px;
+    }
+
+    .icon.icon-lg {
+        font-size: 46px;
+    }
+}
+
+@media all and (max-width: 340px) {
+    .no-page .btn {
+        padding: 0px 10px;
+        min-width: 60px;
+    }
+}
+
+.no-page {
+    background: url("https://i.imgur.com/CdqLEmH.jpg") no-repeat center center fixed;
 }
