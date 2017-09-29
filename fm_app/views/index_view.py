@@ -16,8 +16,8 @@ def station(name=None):
     else:
         if stations:
             station_obj = stations[0]
-            station_obj.description_html = Markup(station_obj.description_html)
     if not station_obj:
         abort(404)
+    station_obj.description_html = Markup(station_obj.description_html)
     return render_template('index.html', station=station_obj,
                            stations=[st.name for st in stations])
