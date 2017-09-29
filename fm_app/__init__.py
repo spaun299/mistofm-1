@@ -1,5 +1,6 @@
 from flask import Flask, g
 from flask_admin import Admin
+from flask_admin.menu import MenuLink
 from flask_login import LoginManager, current_user
 from flask_user import UserManager, SQLAlchemyAdapter
 import config
@@ -90,3 +91,4 @@ def init_admin_panel(app):
         return resp
     admin.add_view(StationView(Station, db_session))
     admin.add_view(ImageView(Image, db_session))
+    admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
