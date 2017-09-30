@@ -27,7 +27,7 @@ $(document).ready(function() {
     // YOUTUBE-----
     $(".utube-find").on('click', function() {
         cache: false;
-        var name = $('.on-listen').text();
+        var name = $('#onListen').text();
         var image = $('#track-image img').attr('src');
 
         if(name!='Misto FM') {
@@ -48,7 +48,7 @@ $(document).ready(function() {
     // SOUNDCLOUD-----
     $(".scloud-find").on('click', function() {
         cache: false;
-        var name = $('.on-listen').text();
+        var name = $('#onListen').text();
 
         name = encodeURIComponent(name);
 
@@ -63,8 +63,8 @@ $(document).ready(function() {
     // FACEBOOK-----
     $(".fb-share").on('click', function() {
         cache: false;
-        var name = $('.on-listen').text();
-        var image = "http://reold-vovax.c9users.io/img/logo-light1.png";
+        var name = $('#onListen').text();
+        var image = "http://127.0.0.1:5000/static/img/logo_400x400.png";
 
         if(name!='Misto FM') {
                            
@@ -72,15 +72,10 @@ $(document).ready(function() {
 
         name = encodeURIComponent(name);
         image = encodeURIComponent(image);
-        if (image === 'undefined') { image = 'http://reold-vovax.c9users.io/img/logo-light1.png'; }
+        if (image === 'undefined') { image = "http://127.0.0.1:5000/static/img/logo_400x400.png"; }
 
-        var ttt = "https://www.facebook.com/dialog/feed?app_id=318530685222946&display=popup&caption="+encodeURIComponent("Misto Fm ● Lviv ● Deep ")+"&link=http://reold-vovax.c9users.io/";
-        var ttt2 = encodeURIComponent(" - ");
-        var ttt3 = encodeURIComponent("Мне нравится ");
-        var ttt4 = encodeURIComponent(" на Misto FM ");
-        var ttt5 = encodeURIComponent("");
-
-        var link_text = ttt+"&name="+ttt3+name+ttt2+name+ttt4+"&description="+ttt5+"&picture="+image;
+        var ttt = "https://www.facebook.com/dialog/feed?app_id=535111550164465&display=popup&caption="+encodeURIComponent("Misto Fm ● Lviv ● Deep ")+"&link=http://mistofm.com.ua/";
+        var link_text = ttt+"&name="+"&description="+"&picture="+image;
                         
         window.open(link_text,'popup', 'width=640,height=520')
     });
