@@ -24,7 +24,7 @@ def upgrade():
     sa.Column('password', sa.String(), nullable=False),
     sa.Column('user_type', sa.String(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('nickname')
+    sa.UniqueConstraint('username')
     )
     op.create_unique_constraint(None, 'image', ['name'])
     # ### end Alembic commands ###

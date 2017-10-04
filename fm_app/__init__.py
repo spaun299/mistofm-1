@@ -1,4 +1,4 @@
-from flask import Flask, g
+from flask import Flask, g, render_template
 from flask_admin import Admin
 from flask_admin.menu import MenuLink
 from flask_login import LoginManager, current_user
@@ -40,8 +40,10 @@ def init_app():
                                                  (user_db.Model, User), {}))
     user_manager = UserManager(db_adapter, app)
     init_admin_panel(app)
+    @app.errorhandler(404)
+    def handle_404(e):
+        return render_template('404.html'), 404
     return app
-
 
 def load_user(_id):
     return g.db.query(User).filter_by(id=int(_id)).one()
