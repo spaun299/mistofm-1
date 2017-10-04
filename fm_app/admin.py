@@ -14,6 +14,7 @@ class IndexView(AdminIndexView):
     def index(self):
         return self.render(self._template)
 
+
 class AdminView(ModelView):
     form_excluded_columns = ['cr_tm', 'stored_on_server']
 
