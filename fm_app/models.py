@@ -1,7 +1,8 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
-    String, Boolean, DateTime, Table
+    String, Boolean, DateTime, Table, UniqueConstraint
+from flask import g
 import datetime
 import config
 import os
@@ -101,3 +102,122 @@ class User(Base):
 
     def get_id(self):
         return self.id
+
+
+class Music(Base):
+    __tablename__ = 'music'
+    id = Column(Integer, primary_key=True)
+    song_name = Column(String, nullable=False)
+    playlists = relationship('Playlist', secondary='playlist_music',
+                             back_populates='songs', lazy='dynamic')
+
+    def __init__(self, song_name):
+        self.song_name = song_name
+
+    def __repr__(self):
+        return self.song_name
+
+
+class StationIces(Base):
+    __tablename__ = 'station_ices'
+    id = Column(Integer, primary_key=True)
+    name = Column(VARCHAR(100), nullable=False)
+    genre = Column(VARCHAR(50), nullable=False)
+    description = Column(String, nullable=False)
+    bitrate = Column(Integer, nullable=False, default=128)
+    crossfade = Column(Integer, nullable=False, default=10)
+    server_host = Column(VARCHAR(200), nullable=False)
+    server_port = Column(Integer, nullable=False)
+    server_rotocol = Column(VARCHAR(20), nullable=False, default='http')
+    server_mountpoint = Column(VARCHAR(100), nullable=False)
+    active = Column(Boolean, default=True)
+
+    def __init__(self, name=None, genre=None, description=None, bitrate=128,
+                 crossfade=10, active=True, server_host=None, server_port=None,
+                 server_rotocol=None, server_mountpoint=None, password=None):
+        self.name = name
+        self.genre = genre
+        self.description = description
+        self.bitrate = bitrate
+        self.crossfade = crossfade
+        self.active = active
+        self.server_host = server_host
+        self.server_port = server_port
+        self.server_rotocol = server_rotocol
+        self.server_mountpoint = server_mountpoint
+        # Note: password will not be saved into the database.
+        # It's just for creating isec config file
+        self.password = password
+
+    def __repr__(self):
+        return self.name
+
+    def save(self):
+        # TODO: Create new config file for ices with name id_ices.xml
+        g.db.add(self)
+        # flush session to get id
+        g.db.flush()
+        g.db.commit()
+
+
+class Playlist(Base):
+    __tablename__ = 'playlist'
+    id = Column(Integer, primary_key=True)
+    station_id = Column(Integer, ForeignKey(StationIces.id))
+    name = Column(VARCHAR(50), nullable=False, unique=True)
+    randomize = Column(Boolean, default=False)
+    play_from_hour = Column(Integer, nullable=False)
+    play_to_hour = Column(Integer, nullable=False)
+    active = Column(Boolean, default=True)
+    station_ices = relationship(StationIces, backref='playlists')
+    songs = relationship(Music, secondary='playlist_music', back_populates='playlists',
+                         lazy='dynamic')
+
+    def __init__(self, name=None, randomize=False, play_from_hour=None, play_to_hour=None,
+                 active=True, station_ices=None):
+        self.name = name
+        self.randomize = randomize
+        self.active = active
+        self.play_from_hour = play_from_hour
+        self.play_to_hour = play_to_hour
+        self.station_ices = station_ices
+
+    def __repr__(self):
+        return self.name
+
+    def save(self):
+        print(self.play_from_hour)
+        print(self.play_to_hour)
+        if self.active:
+            self.validate_playlist()
+        g.db.add(self)
+        g.db.commit()
+
+
+    def validate_playlist(self):
+        # TODO: check if play_from_hour and play_to_hour don't cross with other playlists in that station
+        if list(map(lambda hour: hour not in range(1, 24),
+                    [self.play_from_hour, self.play_to_hour])):
+            raise ValueError('play_from_hour and play_to_hour should be from 1 to 24')
+
+
+class PlaylistMusic(Base):
+    __tablename__ = 'playlist_music'
+    id = Column(Integer, primary_key=True)
+    song_id = Column(Integer, ForeignKey('music.id'), nullable=False)
+    playlist_id = Column(Integer, ForeignKey('playlist.id'), nullable=False)
+    order = Column(Integer, nullable=False)
+    song = relationship(Music, backref='playlist_assoc')
+    playlist = relationship(Playlist, backref='music_assoc')
+    __table_args__ = (UniqueConstraint('song_id', 'playlist_id', 'order',
+                                       name='unique_order'),
+                      UniqueConstraint('song_id', 'playlist_id',
+                                       name='unique_song_playlist_pair'))
+
+    def __init__(self, song=None, playlist=None, order=None):
+        self.song = song
+        self.playlist = playlist
+        self.order = order
+
+    def __repr__(self):
+        return 'Playlist:%s|Song:%s' % (self.playlist.name, self.song.song_name)

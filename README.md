@@ -4,7 +4,7 @@ Python 3.4.3 - PostgreSQL 4.2 - Flask 0.12.2
 NOTE: EACH TIME YOU CREATE OR MODIFY DB MODELS, PLEASE CREATE NEW REVISION FILE AND COMMIT IT TO GIT
 
 Installation
-
+sudo apt-get install python-dev
 1:) Install python
 sudo add-apt-repository ppa:fkrull/deadsnakes
 sudo apt-get update

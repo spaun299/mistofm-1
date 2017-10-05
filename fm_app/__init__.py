@@ -5,14 +5,13 @@ from flask_login import LoginManager, current_user
 from flask_user import UserManager, SQLAlchemyAdapter
 import config
 from .blueprints import register_blueprints
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import TimedRotatingFileHandler
-from utils import get_database_uri
-from .models import Station, Image, User
-from .admin import StationView, ImageView, IndexView
+from utils import get_database_uri, get_db_session
+from .models import Station, Image, User, Playlist, PlaylistMusic, Music, StationIces
+from .admin import StationView, ImageView, IndexView, AdminView, StationIcesView,\
+    PlaylistView
 
 
 def init_app():
@@ -72,16 +71,6 @@ def load_db_session(db_url):
     g.db = db_session
 
 
-def get_db_session(db_url):
-    engine = create_engine(db_url,
-                           echo=False)
-    engine.connect()
-    db_session = scoped_session(sessionmaker(autocommit=False,
-                                             autoflush=False,
-                                             bind=engine))
-    return db_session
-
-
 def init_admin_panel(app):
     admin = Admin(name="Mistofm", template_mode="bootstrap3",
                   index_view=IndexView(url=config.ADMIN_URL_PREFIX))
@@ -96,4 +85,8 @@ def init_admin_panel(app):
         return resp
     admin.add_view(StationView(Station, db_session))
     admin.add_view(ImageView(Image, db_session))
+    admin.add_view(AdminView(Music, db_session))
+    admin.add_view(PlaylistView(Playlist, db_session))
+    admin.add_view(StationIcesView(StationIces, db_session))
+    admin.add_view(AdminView(PlaylistMusic, db_session))
     admin.add_link(MenuLink(name='Logout', category='', url="/logout"))

@@ -11,3 +11,5 @@ LOG_ROTATE_COUNT = 5
 SECRET_KEY = secret_data.SECRET_KEY
 IMAGES_PATH = "static/img/uploaded/"
 ADMIN_URL_PREFIX = "/admin_mistofm"
+MUSIC_PATH = "/home/vkobryn/mistofm/music_uploaded/"
+ICES_CONFIGS_PATH = "/home/vkobryn/mistofm/etc/"

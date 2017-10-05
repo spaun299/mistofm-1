@@ -1,10 +1,15 @@
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.form.widgets import TimePickerWidget
 from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
 from flask_admin.base import AdminIndexView
+from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin import expose
 from flask import Markup, g, flash, current_app as app, redirect, url_for
+from wtforms.fields.simple import PasswordField
 import config
+from utils import get_db_session, get_database_uri
+from .models import Playlist
 from flask_user import current_user, login_required
 
 
@@ -29,6 +34,27 @@ class AdminView(ModelView):
 
     def inaccessible_callback(self, name, **kwargs):
         return redirect(url_for('index.station'))
+
+
+class StationIcesView(AdminView):
+    form_choices = {'bitrate': [(16, 16), (32, 32), (64, 64), (128, 128), (256, 256)]}
+
+    form_ajax_refs = {'playlists': QueryAjaxModelLoader(
+        'playlists', get_db_session(get_database_uri(
+            config.DB_HOST, config.DB_USERNAME,
+            config.DB_PASSWORD, config.DB_NAME)), Playlist,
+        filters=["station_id is NULL"], fields=['name'])}
+    form_extra_fields = {
+        'server_password': PasswordField('Password')
+    }
+
+
+class PlaylistView(AdminView):
+    form_excluded_columns = ['music_assoc']
+
+    # def create_model(self, form):
+    #     model = self.model(**form.data)
+    #     model.save()
 
 
 class StationView(AdminView):
