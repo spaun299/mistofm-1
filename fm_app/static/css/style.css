@@ -2484,3 +2484,35 @@ h1.large {
 .no-page {
     background: url("https://i.imgur.com/CdqLEmH.jpg") no-repeat center center fixed;
 }
+
+.login.feature.bordered {
+    padding: 32px;
+    border: 1px solid #ccc;
+}
+
+.login.feature {
+    margin-bottom: 24px;
+}
+
+.form-group .form-control, .login .btn {
+    border-radius: 3px;
+}
+
+.login h1, .login .control-label, .checkbox label {
+    color: #fff;
+}
+
+.login .checkbox {
+    text-align: left;
+}
+
+.login .btn-primary {
+    background-color: #ccc;
+    border-color: #ccc;
+}
+
+.login .btn-primary:hover {
+    /*background-color: #9c9c9c;*/
+    background-color: #fff;
+    color: #808080;
+}
