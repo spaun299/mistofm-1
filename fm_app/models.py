@@ -210,7 +210,7 @@ class PlaylistMusic(Base):
     __table_args__ = (#UniqueConstraint('song_id', 'playlist_id', 'order',
                       #                 name='unique_order'),
                       UniqueConstraint('song_id', 'playlist_id',
-                                       name='unique_song_playlist_pair'))
+                                       name='unique_song_playlist_pair'),)
 
     def __init__(self, song=None, playlist=None):
         self.song = song

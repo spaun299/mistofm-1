@@ -1,5 +1,9 @@
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form.widgets import TimePickerWidget
+from flask_admin.form.fields import TimeField
+from wtforms.fields.html5 import DateTimeField
+from wtforms import Form
+from wtforms.validators import NumberRange
 from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
 from flask_admin.base import AdminIndexView
@@ -51,6 +55,9 @@ class StationIcesView(AdminView):
 
 class PlaylistView(AdminView):
     form_excluded_columns = ['music_assoc']
+    validate_hours = NumberRange(1, 24, "Value should be from 1 to 24")
+    form_args = {"play_from_hour": {"validators": [validate_hours, ]},
+                 "play_to_hour": {"validators": [validate_hours, ]}}
 
     # def create_model(self, form):
     #     model = self.model(**form.data)
