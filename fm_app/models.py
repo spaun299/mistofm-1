@@ -186,8 +186,6 @@ class Playlist(Base):
         return self.name
 
     def save(self):
-        print(self.play_from_hour)
-        print(self.play_to_hour)
         if self.active:
             self.validate_playlist()
         g.db.add(self)
@@ -206,18 +204,18 @@ class PlaylistMusic(Base):
     id = Column(Integer, primary_key=True)
     song_id = Column(Integer, ForeignKey('music.id'), nullable=False)
     playlist_id = Column(Integer, ForeignKey('playlist.id'), nullable=False)
-    order = Column(Integer, nullable=False)
+    # order = Column(Integer, nullable=False)
     song = relationship(Music, backref='playlist_assoc')
     playlist = relationship(Playlist, backref='music_assoc')
-    __table_args__ = (UniqueConstraint('song_id', 'playlist_id', 'order',
-                                       name='unique_order'),
+    __table_args__ = (#UniqueConstraint('song_id', 'playlist_id', 'order',
+                      #                 name='unique_order'),
                       UniqueConstraint('song_id', 'playlist_id',
                                        name='unique_song_playlist_pair'))
 
-    def __init__(self, song=None, playlist=None, order=None):
+    def __init__(self, song=None, playlist=None):
         self.song = song
         self.playlist = playlist
-        self.order = order
+        # self.order = order
 
     def __repr__(self):
         return 'Playlist:%s|Song:%s' % (self.playlist.name, self.song.song_name)

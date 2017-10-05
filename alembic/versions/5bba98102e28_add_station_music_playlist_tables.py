@@ -53,11 +53,11 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('song_id', sa.Integer(), nullable=False),
     sa.Column('playlist_id', sa.Integer(), nullable=False),
-    sa.Column('order', sa.Integer(), nullable=False),
+    # sa.Column('order', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['playlist_id'], ['playlist.id'], ),
     sa.ForeignKeyConstraint(['song_id'], ['music.id'], ),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('song_id', 'playlist_id', 'order', name='unique_order'),
+    # sa.UniqueConstraint('song_id', 'playlist_id', 'order', name='unique_order'),
     sa.UniqueConstraint('song_id', 'playlist_id', name='unique_song_playlist_pair')
     )
     # ### end Alembic commands ###
