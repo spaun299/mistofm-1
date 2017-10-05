@@ -1,0 +1,298 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    border: none;
+}
+
+.navbar-default {
+    background-image: none;
+    background-color: #fff;
+    border-color: #fff;
+    border-radius: 0;
+}
+
+.admin-page {
+    position: absolute;
+    background: url("https://i.imgur.com/Mt8x1PK.jpg") no-repeat center center fixed;
+    background-size: cover;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    top: 0;
+    bottom: 0;
+    overflow-x: scroll;
+}
+
+.admin-panel {
+    height: 100%;
+    width: 100%;
+}
+
+.admin-panel nav {
+    background: none;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.navbar-default .navbar-brand:focus,
+.navbar-default .navbar-brand:hover {
+    color: #fff;
+}
+
+.navbar-default .navbar-collapse, .navbar-default .navbar-form {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.navbar-default .navbar-nav a {
+    color: #fff;
+}
+
+.navbar-default .navbar-nav>.active>a,
+.navbar-default .navbar-nav>.active>a:focus,
+.navbar-default .navbar-nav>.active>a:hover {
+    color: #fff;
+    background: none;
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
+    border-right: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.navbar-default .navbar-nav>li>a:focus,
+.navbar-default .navbar-nav>li>a:hover {
+    color: #fff;
+}
+
+.navbar-default .navbar-brand,
+.navbar-default .navbar-nav>li>a{
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+.nav .open>a, .nav .open>a:focus, .nav .open>a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: #ccc;
+}
+
+
+.nav-tabs>li.active>a,
+.nav-tabs>li.active>a:focus,
+.nav-tabs>li.active>a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    color: #fff;
+}
+
+.nav>li>a:focus, .nav>li>a:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.admin-panel h1 {
+    text-transform: uppercase;
+    font-size: 14px;
+    color: #fff;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.table-hover>tbody>tr:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.table>tbody>tr>td,
+.table>tbody>tr>th,
+.table>tfoot>tr>td,
+.table>tfoot>tr>th,
+.table>thead>tr>td,
+.table>thead>tr>th {
+    vertical-align: middle;
+    color: #fff;
+    text-transform: capitalize;
+}
+
+.glyphicon {
+    font-size: 16px;
+}
+
+.admin-panel a.icon {
+    font-size: 13px;
+}
+
+.admin-panel .modal-content {
+    background-color: #9c9c9c;
+}
+
+.admin-form hr {
+    bottom: 0;
+}
+
+.admin-form.form-horizontal .control-label {
+    color: #fff;
+}
+
+.admin-panel .dropdown .btn {
+    margin: 0;
+}
+
+.admin-panel .dropdown .dropdown-menu {
+    min-width: 150px;
+    border: none;
+    background-color: #fff;
+}
+
+.submit-row .btn-primary {
+    background-color: #ccc;
+    border-color: #fff;
+}
+
+.btn-primary:hover {
+    background-color: #fff;
+    border-color: #ccc;
+    color: #b2b2b2;
+}
+.btn-primary.focus, .btn-primary:focus {
+    outline:0 !important;
+}
+
+.submit-row .btn-danger {
+    background-color: #656565;
+    border-color: #fff;
+}
+
+.submit-row .btn-danger:hover {
+    background-color: #fff;
+    border-color: #ccc;
+    color: #424242;
+}
+
+.btn-danger.focus, .btn-danger:focus {
+    outline:0 !important;
+}
+
+.select2-container-active .select2-choice,
+.select2-container-multi.select2-container-active .select2-choices,
+.select2-drop-active, button:focus, input:focus {
+    border: none !important;
+    outline:0 !important;
+}
+
+.select2-results .select2-highlighted {
+    background: #ccc !important;
+}
+
+/* List View - fix trash icon inside table column */
+.model-list form.icon {
+    display: inline;
+}
+
+.model-list form.icon button {
+    border: none;
+    background: transparent;
+    text-decoration: none;
+    padding: 0;
+    line-height: normal;
+}
+
+.model-list a.icon:first-child {
+    margin-left: 10px;
+}
+
+/* List View - prevent link icons from differing from trash icon */
+.model-list a.icon {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* List View - fix checkbox column width */
+.list-checkbox-column {
+    width: 14px;
+}
+
+/* List View - fix overlapping border between actions and table */
+.model-list  {
+    position: relative;
+    margin-top: -1px;
+    z-index: 999;
+}
+
+/* List View Search Form - fix gap between form and table */
+.actions-nav form.navbar-form {
+    margin: 1px 0 0 0;
+}
+
+/* List View - prevent word wrap on buttons column, to keep it on one line */
+.list-buttons-column {
+    white-space: nowrap;
+}
+
+/* Filters */
+table.filters {
+    border-collapse: collapse;
+    border-spacing: 4px;
+}
+
+/* prevents gap between table and actions while there are no filters set */
+table.filters:not(:empty) {
+    margin: 12px 0px 20px 0px;
+}
+
+/* spacing between filter X button, operation, and value field */
+/* uses tables instead of form classes for bootstrap2-3 compatibility */
+table.filters tr td {
+    padding-right: 5px;
+    padding-bottom: 3px;
+}
+
+/* Filters - Select2 Boxes */
+.filters .filter-op {
+    width: 130px;
+}
+
+.filters .filter-val {
+    width: 220px;
+}
+
+/* Image thumbnails */
+.image-thumbnail img {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+/* Forms */
+/* adds spacing between navbar and edit/create form (non-modal only) */
+/* required because form-horizontal removes top padding */
+div.container > .admin-form {
+    margin-top: 35px;
+}
+
+/* Form Field Description - Appears when field has 'description' attribute */
+/* Test with: form_args = {'name':{'description': 'test'}} */
+/* prevents awkward gap after help-block - This is default for bootstrap2 */
+.admin-form  .help-block {
+    margin-bottom: 0px;
+}
+
+/* Modals */
+/* hack to prevent cut-off left side of select2 inside of modal */
+/* may be able to remove this after Bootstrap v3.3.5 */
+body.modal-open {
+    overflow-y: scroll;
+    padding-right: 0 !important;
+}
+
+/* Details View - add space between navbar and results */
+.fa_filter_container {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.table-responsive
+{
+    overflow-x: auto;
+}
