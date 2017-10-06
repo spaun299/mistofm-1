@@ -1,8 +1,4 @@
 from flask_admin.contrib.sqla import ModelView
-from flask_admin.form.widgets import TimePickerWidget
-from flask_admin.form.fields import TimeField
-from wtforms.fields.html5 import DateTimeField
-from wtforms import Form
 from wtforms.validators import NumberRange
 from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
@@ -41,7 +37,7 @@ class AdminView(ModelView):
 
 
 class StationIcesView(AdminView):
-    form_choices = {'bitrate': [(16, 16), (32, 32), (64, 64), (128, 128), (256, 256)]}
+    # form_choices = {'bitrate': [(16, 16), (32, 32), (64, 64), (128, 128), (256, 256)]}
 
     form_ajax_refs = {'playlists': QueryAjaxModelLoader(
         'playlists', get_db_session(get_database_uri(
@@ -49,8 +45,34 @@ class StationIcesView(AdminView):
             config.DB_PASSWORD, config.DB_NAME)), Playlist,
         filters=["station_id is NULL"], fields=['name'])}
     form_extra_fields = {
-        'server_password': PasswordField('Password')
+        'password': PasswordField('Password')
     }
+
+    def create_model(self, form):
+        """
+            Create model from form.
+
+            :param form:
+                Form instance
+        """
+        try:
+            model = self.model()
+            form.populate_obj(model)
+            model.save()
+        except Exception as e:
+            flash(e)
+            return False
+        return model
+
+
+class PlaylistMusicView(AdminView):
+    column_filters = ['playlist.name', 'song.song_name']
+    column_searchable_list = ['playlist.name', 'song.song_name']
+
+
+class MusicView(AdminView):
+    column_searchable_list = ['song_name']
+    form_excluded_columns = ['playlist_assoc']
 
 
 class PlaylistView(AdminView):
@@ -58,7 +80,7 @@ class PlaylistView(AdminView):
     validate_hours = NumberRange(1, 24, "Value should be from 1 to 24")
     form_args = {"play_from_hour": {"validators": [validate_hours, ]},
                  "play_to_hour": {"validators": [validate_hours, ]}}
-
+    column_filters = ['name']
     # def create_model(self, form):
     #     model = self.model(**form.data)
     #     model.save()

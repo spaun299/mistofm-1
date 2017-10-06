@@ -2,10 +2,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table, UniqueConstraint
-from flask import g
+from flask import g, flash
 import datetime
 import config
+from utils import copy_file, move_file, delete_file, run_cli_script, file_exists
 import os
+from .errors import IcesException
+import xml.etree.ElementTree as ET
 
 
 Base = declarative_base()
@@ -126,15 +129,15 @@ class StationIces(Base):
     description = Column(String, nullable=False)
     bitrate = Column(Integer, nullable=False, default=128)
     crossfade = Column(Integer, nullable=False, default=10)
-    server_host = Column(VARCHAR(200), nullable=False)
-    server_port = Column(Integer, nullable=False)
+    server_host = Column(VARCHAR(200), nullable=False, default='localhost')
+    server_port = Column(Integer, nullable=False, default=8000)
     server_rotocol = Column(VARCHAR(20), nullable=False, default='http')
     server_mountpoint = Column(VARCHAR(100), nullable=False)
     active = Column(Boolean, default=True)
 
     def __init__(self, name=None, genre=None, description=None, bitrate=128,
                  crossfade=10, active=True, server_host=None, server_port=None,
-                 server_rotocol=None, server_mountpoint=None, password=None):
+                 server_rotocol=None, server_mountpoint=None, password=None, **kwargs):
         self.name = name
         self.genre = genre
         self.description = description
@@ -148,16 +151,82 @@ class StationIces(Base):
         # Note: password will not be saved into the database.
         # It's just for creating isec config file
         self.password = password
+        self.ices_config_path = None
+        self.ices_pid_folder = None
+        self.ices_playlist_module = None
 
     def __repr__(self):
         return self.name
 
+    def get_ices_conf_path(self):
+        return '{folder}{id}_ices.xml'.format(folder=config.ICES_CONFIGS_PATH,
+                                              id=self.id)
+
+    def get_playlist_module_path(self):
+        return '%s_playlist.py' % self.id
+
     def save(self):
-        # TODO: Create new config file for ices with name id_ices.xml
-        g.db.add(self)
-        # flush session to get id
-        g.db.flush()
-        g.db.commit()
+        ices_tmp_conf = ices_conf_perm_path = None
+        try:
+            g.db.add(self)
+            # flush session to get id
+            g.db.flush()
+            self.ices_pid_folder = self.get_pid_path()
+            self.ices_config_path = self.get_ices_conf_path()
+            self.ices_playlist_module = self.get_playlist_module_path()
+            ices_conf_name = '%s_ices.xml' % self.id
+            ices_tmp_conf = copy_file(config.ICES_BASE_CONFIG_PATH, config.TMP_FOLDER,
+                                      ices_conf_name)
+            self.fill_ices_config(ices_tmp_conf)
+            ices_conf_perm_path = config.ICES_CONFIGS_PATH + ices_conf_name
+            move_file(ices_tmp_conf, ices_conf_perm_path)
+            copy_file(config.ICES_PYTHON_BASE_MODULE_PATH,
+                      config.ICES_PYTHON_MODULES_PATH, "%s_playlist.py" % self.id)
+            g.db.commit()
+            self.run_ices()
+            if not self.running():
+                msg = "Ices station was saved and configured, " \
+                      "but can't run. Please see logs"
+                flash(msg)
+                raise IcesException(msg)
+        except Exception as e:
+            g.db.rollback()
+            try:
+                # Delete all created files if something went wrong
+                for fname in [ices_tmp_conf, ices_conf_perm_path, self.ices_playlist_module]:
+                    if file_exists(fname):
+                        delete_file(fname)
+                raise Exception(e)
+            except OSError:
+                pass
+
+    def get_pid_path(self):
+        return config.ICES_PID_FOLDER + '%s_ices.pid' % self.id
+
+    def run_ices(self):
+        run_cli_script('{ices_path} -c {config_path} & echo $1 > {pid_path}'.format(ices_path=config.ICES_PROGRAMM_PATH,
+                                                                                    config_path=self.ices_config_path,
+                                                                                    pid_path=self.ices_pid_folder))
+
+    def running(self):
+        return file_exists(self.ices_pid_folder)
+
+    def fill_ices_config(self, base_config):
+        tree = ET.parse(base_config)
+        root = tree.getroot()
+        playlist, _, stream = root
+        playlist.find('Module').text = self.ices_playlist_module[:-3]
+        playlist.find('Crossfade').text = str(self.crossfade)
+        stream[0].find('Hostname').text = self.server_host
+        stream[0].find('Port').text = str(self.server_port)
+        stream[0].find('Password').text = str(self.password)
+        stream[0].find('Protocol').text = self.server_rotocol
+        stream.find('Mountpoint').text = self.server_mountpoint
+        stream.find('Name').text = self.name
+        stream.find('Genre').text = self.genre
+        stream.find('Description').text = self.description
+        stream.find('Bitrate').text = str(self.bitrate)
+        tree.write(base_config)
 
 
 class Playlist(Base):

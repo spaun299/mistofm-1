@@ -11,7 +11,7 @@ from logging.handlers import TimedRotatingFileHandler
 from utils import get_database_uri, get_db_session
 from .models import Station, Image, User, Playlist, PlaylistMusic, Music, StationIces
 from .admin import StationView, ImageView, IndexView, AdminView, StationIcesView,\
-    PlaylistView
+    PlaylistView, PlaylistMusicView, MusicView
 
 
 def init_app():
@@ -85,8 +85,8 @@ def init_admin_panel(app):
         return resp
     admin.add_view(StationView(Station, db_session))
     admin.add_view(ImageView(Image, db_session))
-    admin.add_view(AdminView(Music, db_session))
+    admin.add_view(MusicView(Music, db_session))
     admin.add_view(PlaylistView(Playlist, db_session))
     admin.add_view(StationIcesView(StationIces, db_session))
-    admin.add_view(AdminView(PlaylistMusic, db_session))
+    admin.add_view(PlaylistMusicView(PlaylistMusic, db_session))
     admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
