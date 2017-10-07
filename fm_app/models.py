@@ -2,7 +2,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table, UniqueConstraint
-from flask import g, flash
+from flask import g, flash, current_app
 import datetime
 import config
 from utils import copy_file, move_file, delete_file, run_cli_script, file_exists
@@ -66,8 +66,12 @@ class Image(Base):
         return r'/{folder_path}{id}.{file_ext}'.format(folder_path=config.IMAGES_PATH,
                                                        id=self.id, file_ext=file_ext)
 
-    def remove_picture(self, image_name):
-        os.remove(config.IMAGES_PATH + image_name)
+    def get_image_path(self):
+        return '{root}/{images_url}'.format(
+            root=current_app.root_path, images_url=self.image_url)
+
+    def remove_picture(self):
+        delete_file(self.get_image_path())
 
     def change_upload_image_url(self):
         self.image_url = config.IMAGES_PATH + str(self.id)
@@ -165,6 +169,20 @@ class StationIces(Base):
     def get_playlist_module_path(self):
         return '%s_playlist.py' % self.id
 
+    def start_ices(self):
+        run_cli_script(
+            '{ices_path} -c {config_path} & echo $1 > {pid_path}'.format(
+                ices_path=config.ICES_PROGRAMM_PATH,
+                config_path=self.ices_config_path,
+                pid_path=self.ices_pid_folder))
+
+    def stop_ices(self):
+        pass
+
+    def restart_ices(self):
+        self.stop_ices()
+        self.start_ices()
+
     def save(self):
         ices_tmp_conf = ices_conf_perm_path = None
         try:
@@ -183,7 +201,7 @@ class StationIces(Base):
             copy_file(config.ICES_PYTHON_BASE_MODULE_PATH,
                       config.ICES_PYTHON_MODULES_PATH, "%s_playlist.py" % self.id)
             g.db.commit()
-            self.run_ices()
+            self.start_ices()
             if not self.running():
                 msg = "Ices station was saved and configured, " \
                       "but can't run. Please see logs"
@@ -193,20 +211,22 @@ class StationIces(Base):
             g.db.rollback()
             try:
                 # Delete all created files if something went wrong
-                for fname in [ices_tmp_conf, ices_conf_perm_path, self.ices_playlist_module]:
-                    if file_exists(fname):
-                        delete_file(fname)
-                raise Exception(e)
+                self.delete_ices_from_file_system(ices_tmp_conf)
             except OSError:
                 pass
+            finally:
+                raise Exception(e)
+
+    def delete_ices_from_file_system(self, tmp_file=None):
+        files = [self.ices_playlist_module, self.ices_config_path]
+        if tmp_file:
+            files.append(tmp_file)
+        for fname in files:
+            if file_exists(fname):
+                delete_file(fname)
 
     def get_pid_path(self):
         return config.ICES_PID_FOLDER + '%s_ices.pid' % self.id
-
-    def run_ices(self):
-        run_cli_script('{ices_path} -c {config_path} & echo $1 > {pid_path}'.format(ices_path=config.ICES_PROGRAMM_PATH,
-                                                                                    config_path=self.ices_config_path,
-                                                                                    pid_path=self.ices_pid_folder))
 
     def running(self):
         return file_exists(self.ices_pid_folder)
@@ -260,12 +280,9 @@ class Playlist(Base):
         g.db.add(self)
         g.db.commit()
 
-
     def validate_playlist(self):
         # TODO: check if play_from_hour and play_to_hour don't cross with other playlists in that station
-        if list(map(lambda hour: hour not in range(1, 24),
-                    [self.play_from_hour, self.play_to_hour])):
-            raise ValueError('play_from_hour and play_to_hour should be from 1 to 24')
+        pass
 
 
 class PlaylistMusic(Base):

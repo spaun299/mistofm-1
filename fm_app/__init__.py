@@ -1,4 +1,4 @@
-from flask import Flask, g, render_template
+from flask import Flask, g, render_template, current_app
 from flask_admin import Admin
 from flask_admin.menu import MenuLink
 from flask_login import LoginManager, current_user
@@ -8,15 +8,18 @@ from .blueprints import register_blueprints
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import TimedRotatingFileHandler
+from sqlalchemy import event
 from utils import get_database_uri, get_db_session
 from .models import Station, Image, User, Playlist, PlaylistMusic, Music, StationIces
 from .admin import StationView, ImageView, IndexView, AdminView, StationIcesView,\
     PlaylistView, PlaylistMusicView, MusicView
+import os
 
 
 def init_app():
     app = Flask(__name__)
     app.config.from_object(config)
+    create_necessary_folders()
     try:
         db_config_fields = (app.config.get('DB_HOST'), app.config.get('DB_USERNAME'),
         app.config.get('DB_PASSWORD'), app.config.get('DB_NAME'))
@@ -90,3 +93,33 @@ def init_admin_panel(app):
     admin.add_view(StationIcesView(StationIces, db_session))
     admin.add_view(PlaylistMusicView(PlaylistMusic, db_session))
     admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
+
+
+def create_necessary_folders():
+    folders = (config.IMAGES_PATH, config.MUSIC_PATH, config.ICES_CONFIGS_PATH,
+               config.ICES_PID_FOLDER, config.STATION_JINGLE_FOLDER,
+               config.TMP_FOLDER)
+    for folder in folders:
+        os.makedirs(folder, exist_ok=True)
+
+
+@event.listens_for(Image, 'after_delete')
+def del_image(mapper, connection, target):
+    if target.stored_on_server:
+        print(target.image_url)
+        try:
+            target.remove_picture()
+        except OSError:
+            pass
+
+
+@event.listens_for(StationIces, 'after_delete')
+def delete_station(mapper, connection, target):
+    target.stop_ices()
+    target.delete_ices_from_file_system()
+
+
+@event.listens_for(Music, 'after_delete')
+def delete_music(mapper, connection, target):
+    # TODO: implement removing songs in file system
+    pass
