@@ -1,5 +1,5 @@
 from flask_admin.contrib.sqla import ModelView
-from wtforms.validators import NumberRange
+from wtforms.validators import NumberRange, DataRequired
 from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
 from flask_admin.base import AdminIndexView
@@ -45,7 +45,7 @@ class StationIcesView(AdminView):
             config.DB_PASSWORD, config.DB_NAME)), Playlist,
         filters=["station_id is NULL"], fields=['name'])}
     form_extra_fields = {
-        'password': PasswordField('Password')
+        'password': PasswordField('Password', [DataRequired()])
     }
 
     def create_model(self, form):
@@ -94,8 +94,7 @@ class StationView(AdminView):
                                                     name: Markup(model.description_html),
                          'images': lambda view, context, model,
                                                     name: AdminView._image_preview(
-                             view, context, model, name, 40
-                         )}
+                             view, context, model, name, 40)}
 
 
 class CustomizableField(Field):
