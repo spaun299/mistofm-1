@@ -118,8 +118,20 @@ class Music(Base):
     playlists = relationship('Playlist', secondary='playlist_music',
                              back_populates='songs', lazy='dynamic')
 
-    def __init__(self, song_name):
+    def __init__(self, song_name=None, songs=[]):
         self.song_name = song_name
+        self.songs = songs
+
+    @property
+    def songs(self):
+        return self.song_name
+
+    @songs.setter
+    def songs(self, song_names):
+        multiple_songs = []
+        for val in song_names:
+            multiple_songs.append(Music(val))
+        g.db.add_all(multiple_songs)
 
     def __repr__(self):
         return self.song_name

@@ -106,7 +106,6 @@ def create_necessary_folders():
 @event.listens_for(Image, 'after_delete')
 def del_image(mapper, connection, target):
     if target.stored_on_server:
-        print(target.image_url)
         try:
             target.remove_picture()
         except OSError:

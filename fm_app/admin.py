@@ -1,6 +1,5 @@
 from flask_admin.contrib.sqla import ModelView
 from wtforms.validators import NumberRange, DataRequired
-from flask_admin.form.upload import ImageUploadField
 from flask_admin.form.rules import Field
 from flask_admin.base import AdminIndexView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
@@ -11,6 +10,61 @@ import config
 from utils import get_db_session, get_database_uri
 from .models import Playlist
 from flask_user import current_user, login_required
+import ast
+from wtforms.widgets import html_params
+from wtforms.utils import unset_value
+from flask_admin.helpers import get_url
+from flask_admin.form.upload import ImageUploadField, FileUploadField
+from flask_admin._compat import urljoin
+
+
+class MultipleFileUploadInput(object):
+    empty_template = "<input %(file)s multiple>"
+
+    def __call__(self, field, **kwargs):
+
+        kwargs.setdefault("id", field.id)
+        kwargs.setdefault("name", field.name)
+
+        args = {
+            "file": html_params(type="file", **kwargs),
+        }
+        template = self.empty_template
+
+        return Markup(template % args)
+
+    def get_attributes(self, field):
+        for item in ast.literal_eval(field.data):
+            filename = item
+            if field.url_relative_path:
+                filename = urljoin(field.url_relative_path, filename)
+
+            yield get_url(field.endpoint, filename=filename), item
+
+
+class MultipleFileUploadField(FileUploadField):
+
+    widget = MultipleFileUploadInput()
+
+    def process(self, formdata, data=unset_value):
+        self.formdata = formdata  # get the formdata to delete files
+        return super(MultipleFileUploadField, self).process(formdata, data)
+
+    def process_formdata(self, valuelist):
+        self.data = list()
+        for value in valuelist:
+            if self._is_uploaded_file(value):
+                self.data.append(value)
+
+    def populate_obj(self, obj, name):
+        filenames = []
+        for data in self.data:
+            filename = self.generate_name(obj, data)
+            filename = self._save_file(data, filename)
+            # update filename of FileStorage to our validated name
+            data.filename = filename
+            filenames.append(filename)
+        setattr(obj, name, filenames)
 
 
 class IndexView(AdminIndexView):
@@ -37,7 +91,6 @@ class AdminView(ModelView):
 
 
 class StationIcesView(AdminView):
-    # form_choices = {'bitrate': [(16, 16), (32, 32), (64, 64), (128, 128), (256, 256)]}
 
     form_ajax_refs = {'playlists': QueryAjaxModelLoader(
         'playlists', get_db_session(get_database_uri(
@@ -72,7 +125,39 @@ class PlaylistMusicView(AdminView):
 
 class MusicView(AdminView):
     column_searchable_list = ['song_name']
-    form_excluded_columns = ['playlist_assoc']
+    form_excluded_columns = ['playlist_assoc', 'song_name']
+    can_edit = False
+
+    def get_file_name(self, file_data):
+        return file_data.filename
+
+    form_extra_fields = {
+        'songs': MultipleFileUploadField("Music",
+                                         base_path=config.MUSIC_PATH,
+                                         namegen=get_file_name,
+                                         allowed_extensions=['mp3', ])
+    }
+
+    def create_model(self, form):
+        """
+            Create model from form.
+
+            :param form:
+                Form instance
+        """
+        try:
+            model = self.model()
+            form.populate_obj(model)
+            self._on_model_change(form, model, True)
+            g.db.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash('Failed to create record.')
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, True)
+        return model
 
 
 class PlaylistView(AdminView):
