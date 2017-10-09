@@ -1,4 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table, UniqueConstraint
@@ -8,7 +9,7 @@ import config
 from utils import copy_file, move_file, delete_file, run_cli_script, file_exists, kill_process, get_pid_by_args
 import os
 from .errors import IcesException
-import xml.etree.ElementTree as ElementTree
+import xml.etree.ElementTree as ET
 
 
 Base = declarative_base()
@@ -158,11 +159,11 @@ class StationIces(Base):
     server_rotocol = Column(VARCHAR(20), nullable=False, default='http')
     server_mountpoint = Column(VARCHAR(100), nullable=False)
     active = Column(Boolean, default=True)
-    # jingle = relationship('Music', backref=backref('stations', lazy='dynamic'))
+    # jingle = relationship('Music', backref='stations')
 
     def __init__(self, name=None, genre=None, description=None, bitrate=128,
                  crossfade=10, active=True, server_host=None, server_port=None,
-                 server_rotocol=None, server_mountpoint=None, password=None, jingle=None, **kwargs):
+                 server_rotocol=None, server_mountpoint=None, password=None, **kwargs):
         self.name = name
         self.genre = genre
         self.description = description
@@ -173,7 +174,6 @@ class StationIces(Base):
         self.server_port = server_port
         self.server_rotocol = server_rotocol
         self.server_mountpoint = server_mountpoint
-        self.jingle = jingle
         # Note: password will not be saved into the database.
         # It's just for creating isec config file
         self.password = password
@@ -268,7 +268,7 @@ class StationIces(Base):
                 delete_file(fname)
 
     def fill_ices_config(self, base_config):
-        tree = ElementTree.parse(base_config)
+        tree = ET.parse(base_config)
         root = tree.getroot()
         playlist, _, stream = root
         playlist.find('Module').text = self.ices_playlist_module[:-3]

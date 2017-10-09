@@ -126,7 +126,7 @@ class PlaylistMusicView(AdminView):
 
 class MusicView(AdminView):
     column_searchable_list = ['song_name']
-    form_excluded_columns = ['playlist_assoc', 'song_name']
+    form_excluded_columns = ['playlist_assoc', 'song_name', 'stations']
     can_edit = False
 
     def get_file_name(self, file_data):
