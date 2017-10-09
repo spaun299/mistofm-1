@@ -120,5 +120,4 @@ def delete_station(mapper, connection, target):
 
 @event.listens_for(Music, 'after_delete')
 def delete_music(mapper, connection, target):
-    # TODO: implement removing songs in file system
-    pass
+    target.delete_song()

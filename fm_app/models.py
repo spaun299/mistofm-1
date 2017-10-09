@@ -133,6 +133,9 @@ class Music(Base):
             multiple_songs.append(Music(val))
         g.db.add_all(multiple_songs)
 
+    def delete_song(self):
+        delete_file(config.MUSIC_PATH + self.song_name)
+
     def __repr__(self):
         return self.song_name
 
