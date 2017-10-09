@@ -31,8 +31,10 @@ def init_app():
     db_url = get_database_uri(*db_config_fields)
     app.config.update(dict(SQLALCHEMY_DATABASE_URI=db_url))
     configure_logger(app)
+    run_ices_modules(db_url)
     app.before_request(lambda: load_db_session(db_url))
     app.before_request(get_current_user)
+    app.teardown_request(teardown_request)
     register_blueprints(app)
     login_manager = LoginManager(app)
     login_manager.login_view = 'auth.login'
@@ -74,6 +76,17 @@ def load_db_session(db_url):
     g.db = db_session
 
 
+def teardown_request(err):
+    g.db.remove()
+
+
+def run_ices_modules(db_url):
+    session = get_db_session(db_url)
+    for station in session.query(StationIces).filter_by(active=True).all():
+        if not station.running:
+            station.start_ices()
+
+
 def init_admin_panel(app):
     admin = Admin(name="Mistofm", template_mode="bootstrap3",
                   index_view=IndexView(url=config.ADMIN_URL_PREFIX))
@@ -97,14 +110,13 @@ def init_admin_panel(app):
 
 def create_necessary_folders():
     folders = (config.IMAGES_PATH, config.MUSIC_PATH, config.ICES_CONFIGS_PATH,
-               config.ICES_PID_FOLDER, config.STATION_JINGLE_FOLDER,
-               config.TMP_FOLDER)
+               config.TMP_FOLDER, config.STATION_JINGLE_FOLDER)
     for folder in folders:
         os.makedirs(folder, exist_ok=True)
 
 
 @event.listens_for(Image, 'after_delete')
-def del_image(mapper, connection, target):
+def delete_image(mapper, connection, target):
     if target.stored_on_server:
         try:
             target.remove_picture()
@@ -120,5 +132,4 @@ def delete_station(mapper, connection, target):
 
 @event.listens_for(Music, 'after_delete')
 def delete_music(mapper, connection, target):
-    # TODO: implement removing songs in file system
-    pass
+    target.delete_song()

@@ -1,11 +1,12 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm import relationship, backref
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table, UniqueConstraint
 from flask import g, flash, current_app
 import datetime
 import config
-from utils import copy_file, move_file, delete_file, run_cli_script, file_exists
+from utils import copy_file, move_file, delete_file, run_cli_script, file_exists, kill_process, get_pid_by_args
 import os
 from .errors import IcesException
 import xml.etree.ElementTree as ET
@@ -46,7 +47,7 @@ class Image(Base):
     __tablename__ = 'image'
     id = Column(Integer, primary_key=True)
     image_url = Column(String)
-    name = Column(String, unique=True)
+    name = Column(String, unique=True, nullable=False)
     stored_on_server = Column(Boolean, default=False)
 
     def __init__(self, image_url=None, name=None, stored_on_server=False, image_data=None):
@@ -58,6 +59,11 @@ class Image(Base):
     def __repr__(self):
         return self.name or self.image_url
 
+    @property
+    def image_path(self):
+        return '{root}/{images_url}'.format(
+            root=current_app.root_path, images_url=self.image_url)
+
     def rename_filename_to_id(self, tmp_filename):
         folder_path = config.IMAGES_PATH
         os.rename(folder_path + tmp_filename, folder_path + str(self.id))
@@ -66,12 +72,8 @@ class Image(Base):
         return r'/{folder_path}{id}.{file_ext}'.format(folder_path=config.IMAGES_PATH,
                                                        id=self.id, file_ext=file_ext)
 
-    def get_image_path(self):
-        return '{root}/{images_url}'.format(
-            root=current_app.root_path, images_url=self.image_url)
-
     def remove_picture(self):
-        delete_file(self.get_image_path())
+        delete_file(self.image_path)
 
     def change_upload_image_url(self):
         self.image_url = config.IMAGES_PATH + str(self.id)
@@ -91,6 +93,9 @@ class User(Base):
         self.password = password
         self.user_type = user_type
         self.email = email
+
+    def __repr__(self):
+        return self.nickname
 
     @property
     def is_authenticated(self):
@@ -122,6 +127,9 @@ class Music(Base):
         self.song_name = song_name
         self.songs = songs
 
+    def __repr__(self):
+        return self.song_name
+
     @property
     def songs(self):
         return self.song_name
@@ -133,13 +141,14 @@ class Music(Base):
             multiple_songs.append(Music(val))
         g.db.add_all(multiple_songs)
 
-    def __repr__(self):
-        return self.song_name
+    def delete_song(self):
+        delete_file(config.MUSIC_PATH + self.song_name)
 
 
 class StationIces(Base):
     __tablename__ = 'station_ices'
     id = Column(Integer, primary_key=True)
+    # jingle_id = Column(Integer, ForeignKey(Music.id), nullable=False)
     name = Column(VARCHAR(100), nullable=False)
     genre = Column(VARCHAR(50), nullable=False)
     description = Column(String, nullable=False)
@@ -150,6 +159,7 @@ class StationIces(Base):
     server_rotocol = Column(VARCHAR(20), nullable=False, default='http')
     server_mountpoint = Column(VARCHAR(100), nullable=False)
     active = Column(Boolean, default=True)
+    # jingle = relationship('Music', backref='stations')
 
     def __init__(self, name=None, genre=None, description=None, bitrate=128,
                  crossfade=10, active=True, server_host=None, server_port=None,
@@ -167,12 +177,30 @@ class StationIces(Base):
         # Note: password will not be saved into the database.
         # It's just for creating isec config file
         self.password = password
-        self.ices_config_path = None
-        self.ices_pid_folder = None
-        self.ices_playlist_module = None
 
     def __repr__(self):
         return self.name
+
+    @property
+    def ices_config_path(self):
+        return self.get_ices_conf_path()
+
+    @property
+    def ices_playlist_module(self):
+        return self.get_playlist_module_path()
+
+    @property
+    def pid(self):
+        _pid = get_pid_by_args('ices', self.ices_config_path)
+        return _pid
+
+    @property
+    def running(self):
+        return True if self.pid else False
+
+    @property
+    def status(self):
+        return 'ON' if self.running else 'OFF'
 
     def get_ices_conf_path(self):
         return '{folder}{id}_ices.xml'.format(folder=config.ICES_CONFIGS_PATH,
@@ -182,28 +210,37 @@ class StationIces(Base):
         return '%s_playlist.py' % self.id
 
     def start_ices(self):
-        run_cli_script(
-            '{ices_path} -c {config_path} & echo $1 > {pid_path}'.format(
-                ices_path=config.ICES_PROGRAMM_PATH,
-                config_path=self.ices_config_path,
-                pid_path=self.ices_pid_folder))
+        if not self.running:
+            run_cli_script(
+                '{bash_script} {ices_path} {config_path}'.format(
+                    bash_script=config.BASH_RUN_ICES,
+                    ices_path=config.ICES_PROGRAMM_PATH,
+                    config_path=self.ices_config_path))
+        else:
+            raise IcesException("Ices station %s already is running" % self.name)
 
     def stop_ices(self):
-        pass
+        if self.running:
+            try:
+                kill_process(self.pid)
+            except Exception as e:
+                raise IcesException("Can't stop ices station %s." % self.name, err=e)
+        else:
+            raise IcesException("Can't stop ices station %s. Process already stopped" % self.name)
 
     def restart_ices(self):
-        self.stop_ices()
+        try:
+            self.stop_ices()
+        except IcesException:
+            pass
         self.start_ices()
 
-    def save(self):
-        ices_tmp_conf = ices_conf_perm_path = None
+    def create(self):
+        ices_tmp_conf = None
         try:
             g.db.add(self)
             # flush session to get id
             g.db.flush()
-            self.ices_pid_folder = self.get_pid_path()
-            self.ices_config_path = self.get_ices_conf_path()
-            self.ices_playlist_module = self.get_playlist_module_path()
             ices_conf_name = '%s_ices.xml' % self.id
             ices_tmp_conf = copy_file(config.ICES_BASE_CONFIG_PATH, config.TMP_FOLDER,
                                       ices_conf_name)
@@ -213,12 +250,13 @@ class StationIces(Base):
             copy_file(config.ICES_PYTHON_BASE_MODULE_PATH,
                       config.ICES_PYTHON_MODULES_PATH, "%s_playlist.py" % self.id)
             g.db.commit()
-            self.start_ices()
-            if not self.running():
-                msg = "Ices station was saved and configured, " \
-                      "but can't run. Please see logs"
-                flash(msg)
-                raise IcesException(msg)
+            if self.active:
+                self.start_ices()
+                if not self.running:
+                    msg = "Ices station was saved and configured, " \
+                          "but can't run. Please see logs"
+                    flash(msg)
+                    raise IcesException(msg)
         except Exception as e:
             g.db.rollback()
             try:
@@ -229,6 +267,26 @@ class StationIces(Base):
             finally:
                 raise Exception(e)
 
+    def edit(self):
+        backup_conf_name = 'ices_%s_backup_xml' % self.id
+        copy_file(self.ices_config_path, config.TMP_FOLDER, backup_conf_name)
+        try:
+            self.fill_ices_config(self.ices_config_path)
+        except Exception as e:
+            move_file(backup_conf_name, self.ices_config_path)
+            g.db.rollback()
+        finally:
+            delete_file(config.TMP_FOLDER + backup_conf_name)
+            if self.active:
+                self.restart_ices()
+                if not self.running:
+                    msg = "Ices station was saved and configured, " \
+                          "but can't run. Please see logs"
+                    flash(msg)
+                    raise IcesException(msg)
+            else:
+                self.stop_ices()
+
     def delete_ices_from_file_system(self, tmp_file=None):
         files = [self.ices_playlist_module, self.ices_config_path]
         if tmp_file:
@@ -236,12 +294,6 @@ class StationIces(Base):
         for fname in files:
             if file_exists(fname):
                 delete_file(fname)
-
-    def get_pid_path(self):
-        return config.ICES_PID_FOLDER + '%s_ices.pid' % self.id
-
-    def running(self):
-        return file_exists(self.ices_pid_folder)
 
     def fill_ices_config(self, base_config):
         tree = ET.parse(base_config)

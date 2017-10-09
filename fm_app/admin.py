@@ -16,6 +16,7 @@ from wtforms.utils import unset_value
 from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField, FileUploadField
 from flask_admin._compat import urljoin
+from .errors import IcesException
 
 
 class MultipleFileUploadInput(object):
@@ -75,6 +76,7 @@ class IndexView(AdminIndexView):
 
 
 class AdminView(ModelView):
+
     form_excluded_columns = ['cr_tm', 'stored_on_server']
 
     @staticmethod
@@ -100,6 +102,10 @@ class StationIcesView(AdminView):
     form_extra_fields = {
         'password': PasswordField('Password', [DataRequired()])
     }
+    # column_extra_row_actions =
+    column_list = ('name', 'genre', 'description', 'bitrate', 'crossfade',
+                   'server_host', 'server_port', 'server_rotocol',
+                   'server_mountpoint', 'active', 'status')
 
     def create_model(self, form):
         """
@@ -111,11 +117,35 @@ class StationIcesView(AdminView):
         try:
             model = self.model()
             form.populate_obj(model)
-            model.save()
-        except Exception as e:
-            flash(e)
+            model.create()
+        except IcesException as e:
+            flash(e.message)
             return False
         return model
+
+    def update_model(self, form, model):
+        """
+            Update model from form.
+
+            :param form:
+                Form instance
+            :param model:
+                Model instance
+        """
+        try:
+            form.populate_obj(model)
+            model.edit()
+            self._on_model_change(form, model, False)
+            self.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash('Failed to update record.')
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
 
 
 class PlaylistMusicView(AdminView):
@@ -125,7 +155,7 @@ class PlaylistMusicView(AdminView):
 
 class MusicView(AdminView):
     column_searchable_list = ['song_name']
-    form_excluded_columns = ['playlist_assoc', 'song_name']
+    form_excluded_columns = ['playlist_assoc', 'song_name', 'stations']
     can_edit = False
 
     def get_file_name(self, file_data):
@@ -159,6 +189,29 @@ class MusicView(AdminView):
             self.after_model_change(form, model, True)
         return model
 
+    def delete_model(self, model):
+        """
+            Delete model.
+
+            :param model:
+                Model to delete
+        """
+        try:
+            self.on_model_delete(model)
+            for obj in model.playlist_assoc:
+                self.session.delete(obj)
+            self.session.delete(model)
+            self.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash('Failed to delete record.')
+            self.session.rollback()
+
+            return False
+        else:
+            self.after_model_delete(model)
+        return True
+
 
 class PlaylistView(AdminView):
     form_excluded_columns = ['music_assoc']
@@ -166,9 +219,6 @@ class PlaylistView(AdminView):
     form_args = {"play_from_hour": {"validators": [validate_hours, ]},
                  "play_to_hour": {"validators": [validate_hours, ]}}
     column_filters = ['name']
-    # def create_model(self, form):
-    #     model = self.model(**form.data)
-    #     model.save()
 
 
 class StationView(AdminView):
