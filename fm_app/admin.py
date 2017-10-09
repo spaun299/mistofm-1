@@ -160,6 +160,30 @@ class MusicView(AdminView):
             self.after_model_change(form, model, True)
         return model
 
+    def delete_model(self, model):
+        """
+            Delete model.
+
+            :param model:
+                Model to delete
+        """
+        try:
+            self.on_model_delete(model)
+            for obj in model.playlist_assoc:
+                self.session.delete(obj)
+            self.session.delete(model)
+            self.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash('Failed to delete record.')
+            self.session.rollback()
+
+            return False
+        else:
+            self.after_model_delete(model)
+
+        return True
+
 
 class PlaylistView(AdminView):
     form_excluded_columns = ['music_assoc']
