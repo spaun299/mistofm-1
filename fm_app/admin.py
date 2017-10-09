@@ -16,6 +16,7 @@ from wtforms.utils import unset_value
 from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField, FileUploadField
 from flask_admin._compat import urljoin
+from .errors import IcesException
 
 
 class MultipleFileUploadInput(object):
@@ -112,8 +113,8 @@ class StationIcesView(AdminView):
             model = self.model()
             form.populate_obj(model)
             model.save()
-        except Exception as e:
-            flash(e)
+        except IcesException as e:
+            flash(e.message)
             return False
         return model
 
@@ -166,9 +167,6 @@ class PlaylistView(AdminView):
     form_args = {"play_from_hour": {"validators": [validate_hours, ]},
                  "play_to_hour": {"validators": [validate_hours, ]}}
     column_filters = ['name']
-    # def create_model(self, form):
-    #     model = self.model(**form.data)
-    #     model.save()
 
 
 class StationView(AdminView):

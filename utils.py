@@ -4,6 +4,7 @@ import os
 import shutil
 import subprocess
 import shlex
+import re
 
 
 def get_database_uri(host, username, password, db_name):
@@ -44,4 +45,16 @@ def file_exists(file_path):
 
 def run_cli_script(script_with_args: str):
     args = shlex.split(script_with_args)
-    subprocess.Popen(args, shell=True)
+    subprocess.check_call(args)
+    # subprocess.Popen(args)
+
+
+def kill_process(pid):
+    run_cli_script('kill -9 %s' % pid)
+
+
+def get_pid_by_args(*args):
+    command = "ps -eaf | grep -v grep | %s grep -v $$ | awk '{ print $2 }'" % ''.join(
+        [' grep %s | ' % arg for arg in args])
+    pid = re.findall(b'\d+', subprocess.check_output(['bash', '-c', command]))
+    return str(pid[0]) if pid else None

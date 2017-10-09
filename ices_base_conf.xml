@@ -7,7 +7,7 @@
     <Crossfade></Crossfade>
   </Playlist>
   <Execution>
-    <Background>0</Background>
+    <Background>1</Background>
     <Verbose>0</Verbose>
     <BaseDirectory>/tmp</BaseDirectory>
   </Execution>

@@ -29,6 +29,19 @@
 1. Create/upgrade tables for database via alembic:
 
    * alembic --config='/path/to/config/file' upgrade head|revision_id
+1. Install Icecast2:
+   * apt-get install icecast2
+   * configure icecast2 server manually
+1. Install ices:
+   * apt-get install libshout3-dev
+   * /etc/apt/sources.list -> deb http://www.deb-multimedia.org testing main non-free
+   * apt-get install deb-multimedia-keyring
+   * apt-get install libmp3lame-dev
+   * apt-get install libxml2-dev
+   * wget http://www.centova.com/clientdist/ices/ices-cc-0.4.3.tar.gz
+   * tar xvzf ices-cc-0.4.3.tar.gz
+   * ./configure --with-lame --without-perl --without-python --without-flac --with-xml --prefix=/usr/local/ices
+   * make && make install
 
 **COMMANDS FOR ALEMBIC:**
 1. Create new revision
