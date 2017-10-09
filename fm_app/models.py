@@ -198,6 +198,10 @@ class StationIces(Base):
     def running(self):
         return True if self.pid else False
 
+    @property
+    def status(self):
+        return 'ON' if self.running else 'OFF'
+
     def get_ices_conf_path(self):
         return '{folder}{id}_ices.xml'.format(folder=config.ICES_CONFIGS_PATH,
                                               id=self.id)
@@ -225,10 +229,13 @@ class StationIces(Base):
             raise IcesException("Can't stop ices station %s. Process already stopped" % self.name)
 
     def restart_ices(self):
-        self.stop_ices()
+        try:
+            self.stop_ices()
+        except IcesException:
+            pass
         self.start_ices()
 
-    def save(self):
+    def create(self):
         ices_tmp_conf = None
         try:
             g.db.add(self)
@@ -243,12 +250,13 @@ class StationIces(Base):
             copy_file(config.ICES_PYTHON_BASE_MODULE_PATH,
                       config.ICES_PYTHON_MODULES_PATH, "%s_playlist.py" % self.id)
             g.db.commit()
-            self.start_ices()
-            if not self.running:
-                msg = "Ices station was saved and configured, " \
-                      "but can't run. Please see logs"
-                flash(msg)
-                raise IcesException(msg)
+            if self.active:
+                self.start_ices()
+                if not self.running:
+                    msg = "Ices station was saved and configured, " \
+                          "but can't run. Please see logs"
+                    flash(msg)
+                    raise IcesException(msg)
         except Exception as e:
             g.db.rollback()
             try:
@@ -258,6 +266,26 @@ class StationIces(Base):
                 pass
             finally:
                 raise Exception(e)
+
+    def edit(self):
+        backup_conf_name = 'ices_%s_backup_xml' % self.id
+        copy_file(self.ices_config_path, config.TMP_FOLDER, backup_conf_name)
+        try:
+            self.fill_ices_config(self.ices_config_path)
+        except Exception as e:
+            move_file(backup_conf_name, self.ices_config_path)
+            g.db.rollback()
+        finally:
+            delete_file(config.TMP_FOLDER + backup_conf_name)
+            if self.active:
+                self.restart_ices()
+                if not self.running:
+                    msg = "Ices station was saved and configured, " \
+                          "but can't run. Please see logs"
+                    flash(msg)
+                    raise IcesException(msg)
+            else:
+                self.stop_ices()
 
     def delete_ices_from_file_system(self, tmp_file=None):
         files = [self.ices_playlist_module, self.ices_config_path]

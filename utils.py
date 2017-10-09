@@ -50,6 +50,7 @@ def run_cli_script(script_with_args: str):
 
 
 def kill_process(pid):
+    print(pid)
     run_cli_script('kill -9 %s' % pid)
 
 
@@ -57,4 +58,4 @@ def get_pid_by_args(*args):
     command = "ps -eaf | grep -v grep | %s grep -v $$ | awk '{ print $2 }'" % ''.join(
         [' grep %s | ' % arg for arg in args])
     pid = re.findall(b'\d+', subprocess.check_output(['bash', '-c', command]))
-    return str(pid[0]) if pid else None
+    return str(pid[0], 'utf-8') if pid else None

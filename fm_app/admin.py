@@ -76,6 +76,7 @@ class IndexView(AdminIndexView):
 
 
 class AdminView(ModelView):
+
     form_excluded_columns = ['cr_tm', 'stored_on_server']
 
     @staticmethod
@@ -101,6 +102,10 @@ class StationIcesView(AdminView):
     form_extra_fields = {
         'password': PasswordField('Password', [DataRequired()])
     }
+    # column_extra_row_actions =
+    column_list = ('name', 'genre', 'description', 'bitrate', 'crossfade',
+                   'server_host', 'server_port', 'server_rotocol',
+                   'server_mountpoint', 'active', 'status')
 
     def create_model(self, form):
         """
@@ -112,11 +117,35 @@ class StationIcesView(AdminView):
         try:
             model = self.model()
             form.populate_obj(model)
-            model.save()
+            model.create()
         except IcesException as e:
             flash(e.message)
             return False
         return model
+
+    def update_model(self, form, model):
+        """
+            Update model from form.
+
+            :param form:
+                Form instance
+            :param model:
+                Model instance
+        """
+        try:
+            form.populate_obj(model)
+            model.edit()
+            self._on_model_change(form, model, False)
+            self.session.commit()
+        except Exception as ex:
+            if not self.handle_view_exception(ex):
+                flash('Failed to update record.')
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, False)
+
+        return True
 
 
 class PlaylistMusicView(AdminView):
@@ -181,7 +210,6 @@ class MusicView(AdminView):
             return False
         else:
             self.after_model_delete(model)
-
         return True
 
 
