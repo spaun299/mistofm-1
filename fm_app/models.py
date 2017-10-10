@@ -6,9 +6,10 @@ from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
 from flask import g, flash, current_app
 import datetime
 import config
-from utils import copy_file, move_file, delete_file, run_cli_script, file_exists, kill_process, get_pid_by_args
+from utils import copy_file, move_file, delete_file, run_cli_script, file_exists, kill_process, get_pid_by_args, \
+    get_hours_from_timeframe
 import os
-from .errors import IcesException
+from .errors import IcesException, PlaylistException
 import xml.etree.ElementTree as ET
 
 
@@ -142,7 +143,10 @@ class Music(Base):
         g.db.add_all(multiple_songs)
 
     def delete_song(self):
-        delete_file(config.MUSIC_PATH + self.song_name)
+        try:
+            delete_file(config.MUSIC_PATH + self.song_name)
+        except OSError:
+            pass
 
 
 class StationIces(Base):
@@ -238,9 +242,6 @@ class StationIces(Base):
     def create(self):
         ices_tmp_conf = None
         try:
-            g.db.add(self)
-            # flush session to get id
-            g.db.flush()
             ices_conf_name = '%s_ices.xml' % self.id
             ices_tmp_conf = copy_file(config.ICES_BASE_CONFIG_PATH, config.TMP_FOLDER,
                                       ices_conf_name)
@@ -338,15 +339,30 @@ class Playlist(Base):
     def __repr__(self):
         return self.name
 
-    def save(self):
-        if self.active:
-            self.validate_playlist()
-        g.db.add(self)
-        g.db.commit()
-
-    def validate_playlist(self):
-        # TODO: check if play_from_hour and play_to_hour don't cross with other playlists in that station
+    def create(self):
         pass
+
+    def validate(self):
+        # TODO: check if play_from_hour and play_to_hour don't cross with other playlists in that station
+        if self.active:
+            try:
+                station_playlists = [playlist for playlist in self.station_ices.playlists
+                                     if playlist.active and playlist.id != self.id]
+            except AttributeError:
+                station_playlists = None
+            if station_playlists:
+                default_err_message = "Playlist is crossing with playlist '%s'." \
+                                      "Choose another time frames"
+                self_hours_list = get_hours_from_timeframe(self.play_from_hour, self.play_to_hour)
+                for station_playlist in station_playlists:
+                    if station_playlist.play_from_hour == self_hours_list[0] \
+                          or station_playlist.play_to_hour == self_hours_list[-1]:
+                        raise PlaylistException(default_err_message % station_playlist)
+                    station_hours_list = get_hours_from_timeframe(
+                        station_playlist.play_from_hour, station_playlist.play_to_hour)[1:-1]
+                    if any(hour in self_hours_list for hour in station_hours_list) \
+                            or any(hour in station_hours_list for hour in self_hours_list):
+                        raise PlaylistException(default_err_message % station_playlist)
 
 
 class PlaylistMusic(Base):

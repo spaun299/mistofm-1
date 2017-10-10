@@ -4,6 +4,7 @@ from flask_admin.form.rules import Field
 from flask_admin.base import AdminIndexView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin import expose
+from flask_admin.actions import action
 from flask import Markup, g, flash, current_app as app, redirect, url_for
 from wtforms.fields.simple import PasswordField
 import config
@@ -16,7 +17,7 @@ from wtforms.utils import unset_value
 from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField, FileUploadField
 from flask_admin._compat import urljoin
-from .errors import IcesException
+from .errors import IcesException, PlaylistException
 
 
 class MultipleFileUploadInput(object):
@@ -127,10 +128,15 @@ class StationIcesView(AdminView):
         try:
             model = self.model()
             form.populate_obj(model)
+            self.session.add(model)
+            self.session.flush()
             model.create()
+            self.session.commit()
         except IcesException as e:
             flash(e.message)
             return False
+        else:
+            self.after_model_change(form, model, True)
         return model
 
     def update_model(self, form, model):
@@ -229,6 +235,33 @@ class PlaylistView(AdminView):
     form_args = {"play_from_hour": {"validators": [validate_hours, ]},
                  "play_to_hour": {"validators": [validate_hours, ]}}
     column_filters = ['name']
+
+    def create_model(self, form):
+        """
+            Create model from form.
+
+            :param form:
+                Form instance
+        """
+        try:
+            model = self.model()
+            form.populate_obj(model)
+            self.session.add(model)
+            self.session.flush()
+            model.validate()
+            model.create()
+            self.session.commit()
+        except PlaylistException as e:
+            flash(e.message, 'error')
+            self.session.rollback()
+            return False
+        except IcesException as e:
+            flash(e.message, 'error')
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, True)
+        return model
 
 
 class StationView(AdminView):

@@ -21,3 +21,7 @@ class IcesException(Error):
         if err:
             self.message += self.get_text_from_error(err)
         super(IcesException, self).__init__(message)
+
+
+class PlaylistException(IcesException):
+    pass
