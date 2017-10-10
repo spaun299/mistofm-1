@@ -1186,7 +1186,8 @@ nav .add-drop-overview a {
         -webkit-transform: translate3d(0, 0px, 0);
         -moz-transform: translate3d(0, 0px, 0);
         left: 0;
-        background: #fff;
+        /*background: #fff;*/
+        background: rgba(255, 255, 255, 0);
     }
 
     .menu > li > ul {
@@ -1208,6 +1209,7 @@ nav .add-drop-overview a {
     .menu > li > ul li a, .mega-menu .title {
         padding: 4px 16px;
         color: #525252;
+        opacity: 0.8;
     }
 
     .menu-link .menu-link li {
@@ -1235,6 +1237,15 @@ nav .add-drop-overview a {
         border-top: 1px solid #ccc;
         line-height: 40px;
         min-height: 40px;
+    }
+
+    nav.transparent .module.widget-handle.mobile-toggle.active {
+        border: none;
+        border-left: 1px solid rgba(255, 255, 255, 0) !important;
+    }
+
+    .menu .menu-link.active a {
+        border-bottom: 1px solid #ccc;
     }
 
     .module.widget-handle .menu {
@@ -1277,6 +1288,7 @@ nav .add-drop-overview a {
 
     .toggle-widget-handle .function {
         display: block !important;
+        background: rgba(255, 255, 255, 0);
     }
 
     .mobile-toggle {
@@ -1376,7 +1388,8 @@ nav.transparent {
 
 @media all and (max-width: 990px) {
     nav.transparent .nav-open {
-        background: #fff;
+        /*background: #fff;*/
+        background: rgba(255, 255, 255, 0.8);
     }
 
     nav.transparent .nav-open .menu > li > a, nav.transparent .nav-open .nav-utility {
@@ -2328,19 +2341,19 @@ footer .btn.active, footer .btn:active {
 }
 
 .preloader-squares .square:nth-child(1) {
-    /*animation-delay: .1s;*/
+    animation-delay: .1s;
 }
 
 .preloader-squares .square:nth-child(2) {
-    animation-delay: .4s;
+    animation-delay: .3s;
 }
 
 .preloader-squares .square:nth-child(3) {
-    animation-delay: 1.2s;
+    animation-delay: .9s;
 }
 
 .preloader-squares .square:nth-child(4) {
-    animation-delay: .8s;
+    animation-delay: .6s;
 }
 
 @keyframes focusfade {
