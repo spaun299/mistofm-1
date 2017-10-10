@@ -31,7 +31,6 @@
   <body>
     {% block page_body %}
     <div class="admin-panel admin-page">
-
         <div class="container">
             <div class="row">
 
@@ -72,6 +71,15 @@
 
             {# store the jinja2 context for form_rules rendering logic #}
             {% set render_ctx = h.resolve_ctx() %}
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <ul class=flashes>
+            {% for message in messages %}
+            <li style="color:red">{{ message }}</li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+            {% endwith %}
 
             {% block body %}{% endblock %}
 

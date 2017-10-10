@@ -109,8 +109,8 @@ def init_admin_panel(app):
 
 
 def create_necessary_folders():
-    folders = (config.IMAGES_PATH, config.MUSIC_PATH, config.ICES_CONFIGS_PATH,
-               config.TMP_FOLDER, config.STATION_JINGLE_FOLDER)
+    folders = (config.IMAGES_PATH, config.MUSIC_PATH,
+               config.ICES_CONFIGS_PATH, config.TMP_FOLDER)
     for folder in folders:
         os.makedirs(folder, exist_ok=True)
 

@@ -46,11 +46,9 @@ def file_exists(file_path):
 def run_cli_script(script_with_args: str):
     args = shlex.split(script_with_args)
     subprocess.check_call(args)
-    # subprocess.Popen(args)
 
 
 def kill_process(pid):
-    print(pid)
     run_cli_script('kill -9 %s' % pid)
 
 
@@ -59,3 +57,16 @@ def get_pid_by_args(*args):
         [' grep %s | ' % arg for arg in args])
     pid = re.findall(b'\d+', subprocess.check_output(['bash', '-c', command]))
     return str(pid[0], 'utf-8') if pid else None
+
+
+def get_hours_from_timeframe(_from, _to):
+    hours = []
+    while _from != _to:
+        hours.append(_from)
+        if _from == 24:
+            _from = 1
+        else:
+            _from += 1
+    else:
+        hours.append(_from)
+    return hours
