@@ -107,6 +107,16 @@ class StationIcesView(AdminView):
                    'server_host', 'server_port', 'server_rotocol',
                    'server_mountpoint', 'active', 'status')
 
+    def show_status(self, context, model, name):
+        markup_string = '<span class="glyphicon {icon}" style="color:{color};font-size:40px;"></span>'
+        if model.running:
+            icon, color = "glyphicon-ok-sign", "green"
+        else:
+            icon, color = "glyphicon-minus-sign", "red"
+        return Markup(markup_string.format(icon=icon, color=color))
+
+    column_formatters = {'status': show_status}
+
     def create_model(self, form):
         """
             Create model from form.
