@@ -152,7 +152,7 @@ class Music(Base):
 class StationIces(Base):
     __tablename__ = 'station_ices'
     id = Column(Integer, primary_key=True)
-    # jingle_id = Column(Integer, ForeignKey(Music.id), nullable=False)
+    jingle_id = Column(Integer, ForeignKey(Music.id))
     name = Column(VARCHAR(100), nullable=False)
     genre = Column(VARCHAR(50), nullable=False)
     description = Column(String, nullable=False)
@@ -163,11 +163,11 @@ class StationIces(Base):
     server_rotocol = Column(VARCHAR(20), nullable=False, default='http')
     server_mountpoint = Column(VARCHAR(100), nullable=False)
     active = Column(Boolean, default=True)
-    # jingle = relationship('Music', backref='stations')
+    jingle = relationship('Music', backref='stations')
 
     def __init__(self, name=None, genre=None, description=None, bitrate=128,
                  crossfade=10, active=True, server_host=None, server_port=None,
-                 server_rotocol=None, server_mountpoint=None, password=None, **kwargs):
+                 server_rotocol=None, server_mountpoint=None, password=None, jingle=None, **kwargs):
         self.name = name
         self.genre = genre
         self.description = description
@@ -178,6 +178,7 @@ class StationIces(Base):
         self.server_port = server_port
         self.server_rotocol = server_rotocol
         self.server_mountpoint = server_mountpoint
+        self.jingle = jingle
         # Note: password will not be saved into the database.
         # It's just for creating isec config file
         self.password = password

@@ -103,7 +103,11 @@ class StationIcesView(AdminView):
     form_extra_fields = {
         'password': PasswordField('Password', [DataRequired()])
     }
-    # column_extra_row_actions =
+    form_args = {
+        'jingle': {
+            'validators': [DataRequired()]
+        }
+    }
     column_list = ('name', 'genre', 'description', 'bitrate', 'crossfade',
                    'server_host', 'server_port', 'server_rotocol',
                    'server_mountpoint', 'active', 'status')
