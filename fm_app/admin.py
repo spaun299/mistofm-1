@@ -111,6 +111,7 @@ class StationIcesView(AdminView):
     column_list = ('name', 'genre', 'description', 'bitrate', 'crossfade',
                    'server_host', 'server_port', 'server_rotocol',
                    'server_mountpoint', 'active', 'status')
+    form_excluded_columns = ('playlists',)
 
     def show_status(self, context, model, name):
         markup_string = '<span class="glyphicon {icon}" style="color:{color};font-size:40px;"></span>'
@@ -134,10 +135,10 @@ class StationIcesView(AdminView):
             form.populate_obj(model)
             self.session.add(model)
             self.session.flush()
-            model.create()
-            self.session.commit()
+            model.create(self.session)
         except IcesException as e:
             flash(e.message)
+            self.session.rollback()
             return False
         else:
             self.after_model_change(form, model, True)
@@ -154,7 +155,7 @@ class StationIcesView(AdminView):
         """
         try:
             form.populate_obj(model)
-            model.edit()
+            model.edit(self.session)
             self._on_model_change(form, model, False)
             self.session.commit()
         except Exception as ex:
@@ -164,7 +165,6 @@ class StationIcesView(AdminView):
             return False
         else:
             self.after_model_change(form, model, False)
-
         return True
 
 

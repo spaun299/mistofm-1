@@ -14,6 +14,7 @@ from .models import Station, Image, User, Playlist, PlaylistMusic, Music, Statio
 from .admin import StationView, ImageView, IndexView, AdminView, StationIcesView,\
     PlaylistView, PlaylistMusicView, MusicView
 import os
+from .errors import IcesException
 
 
 def init_app():
@@ -126,7 +127,11 @@ def delete_image(mapper, connection, target):
 
 @event.listens_for(StationIces, 'after_delete')
 def delete_station(mapper, connection, target):
-    target.stop_ices()
+    try:
+        target.stop_ices()
+    except IcesException as e:
+        if 'Process already stopped' in e.message:
+            pass
     target.delete_ices_from_file_system()
 
 
