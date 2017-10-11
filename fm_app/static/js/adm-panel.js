@@ -9,4 +9,11 @@ $(document).ready(function() {
     curSubmit.on('click', function (e) {
         loading.toggleClass('play')
     });
+
+    window.setTimeout(function() {
+        $(".flashes").fadeTo(500, 0).slideUp(500, function(){
+            $(this).remove();
+        });
+    }, 5000);
+
 });

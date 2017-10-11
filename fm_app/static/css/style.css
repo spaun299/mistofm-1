@@ -392,9 +392,13 @@ input[type="range"] {
 
 .social-icons ul a {
     color: #fff;
-    padding: 10px;
+    padding: 8px;
     border: 2px solid #fff;
     border-radius: 50px;
+    height: 43px;
+    width: 44px;
+    position: relative;
+    display: inline-block;
 }
 
 .social-icons ul a i {
@@ -431,8 +435,7 @@ input[type="range"] {
 }
 
 .social-icons ul li a:hover {
-    /*color: #ccc !important;*/
-    border-color: #ccc !important;
+    /*border-color: rgba(255, 255, 255, 0);*/
     -webkit-transition: .5s ease;
     -moz-transition: .5s ease;
     -ms-transition: .5s ease;
@@ -997,6 +1000,10 @@ nav.bg-dark .logo-dark {
     position: relative;
 }
 
+.module.widget-handle .add-drop>i {
+    font-size: 14px;
+}
+
 .add-drop i {
     color: #fff;
     -webkit-transition: .8s ease;
@@ -1263,7 +1270,7 @@ nav .add-drop-overview a {
     .module.widget-handle .title {
         display: inline-block;
         position: relative;
-        bottom: 2.5px;
+        bottom: 1.6px;
         margin-left: 8px;
         color: #292929;
     }
@@ -2151,8 +2158,8 @@ footer .btn.active, footer .btn:active {
     position: relative;
     margin-right: 0px;
     display: inline-block;
-    width: 41px;
-    height: 41px;
+    width: 43px;
+    height: 43px;
     border: #fff 2px solid;
     /*border-radius: 0px;*/
     border-radius: 50px;
@@ -2179,8 +2186,8 @@ footer .btn.active, footer .btn:active {
 .btn-player .bar {
     display: inline-block;
     position: absolute;
-    top: 10px;
-    left: 0;
+    top: 11px;
+    left: 1px;
     width: 2px;
     height: 16px;
     border-radius: 0px;
@@ -2225,7 +2232,7 @@ footer .btn.active, footer .btn:active {
 }
 
 .bottom-player-side .bottom-player-block .btn-player {
-    top: 35px;
+    top: 34px;
 }
 
 .bottom-player-block .track {
@@ -2235,7 +2242,7 @@ footer .btn.active, footer .btn:active {
 
 .bottom-player-block .social-icons {
     position: relative;
-    top: 35px;
+    top: 26px;
     padding: 8px 0px;
 }
 
