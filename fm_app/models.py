@@ -1,6 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table, UniqueConstraint
 from flask import g, flash, current_app

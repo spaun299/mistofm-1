@@ -6,3 +6,4 @@ flask-admin>=1.5
 pillow>=4.2.1
 flask-login>=0.4
 flask-user>=0.6.19
+pytz
