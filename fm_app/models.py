@@ -1,6 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.exc import InvalidRequestError
-from sqlalchemy.orm import relationship, backref
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table, UniqueConstraint
 from flask import g, flash, current_app
@@ -192,7 +191,8 @@ class StationIces(Base):
 
     @property
     def ices_playlist_module(self):
-        return self.get_playlist_module_path()
+        return 'playlist_%s.py' % self.id
+
 
     @property
     def pid(self):
@@ -212,7 +212,7 @@ class StationIces(Base):
                                               id=self.id)
 
     def get_playlist_module_path(self):
-        return '%s_playlist.py' % self.id
+        return config.ICES_PYTHON_MODULES_PATH + self.ices_playlist_module
 
     def start_ices(self):
         if not self.running:
@@ -240,7 +240,7 @@ class StationIces(Base):
             pass
         self.start_ices()
 
-    def create(self):
+    def create(self, session):
         ices_tmp_conf = None
         try:
             ices_conf_name = '%s_ices.xml' % self.id
@@ -250,8 +250,8 @@ class StationIces(Base):
             ices_conf_perm_path = config.ICES_CONFIGS_PATH + ices_conf_name
             move_file(ices_tmp_conf, ices_conf_perm_path)
             copy_file(config.ICES_PYTHON_BASE_MODULE_PATH,
-                      config.ICES_PYTHON_MODULES_PATH, "%s_playlist.py" % self.id)
-            g.db.commit()
+                      config.ICES_PYTHON_MODULES_PATH, "playlist_%s.py" % self.id)
+            session.commit()
             if self.active:
                 self.start_ices()
                 if not self.running:
@@ -260,7 +260,7 @@ class StationIces(Base):
                     flash(msg)
                     raise IcesException(msg)
         except Exception as e:
-            g.db.rollback()
+            session.rollback()
             try:
                 # Delete all created files if something went wrong
                 self.delete_ices_from_file_system(ices_tmp_conf)
@@ -269,18 +269,22 @@ class StationIces(Base):
             finally:
                 raise Exception(e)
 
-    def edit(self):
+    def edit(self, session):
         backup_conf_name = 'ices_%s_backup_xml' % self.id
         copy_file(self.ices_config_path, config.TMP_FOLDER, backup_conf_name)
         try:
             self.fill_ices_config(self.ices_config_path)
         except Exception as e:
             move_file(backup_conf_name, self.ices_config_path)
-            g.db.rollback()
+            session.rollback()
         finally:
             delete_file(config.TMP_FOLDER + backup_conf_name)
             if self.active:
-                self.restart_ices()
+                try:
+                    self.restart_ices()
+                except IcesException as e:
+                    if 'Process already stopped' in e.message:
+                        pass
                 if not self.running:
                     msg = "Ices station was saved and configured, " \
                           "but can't run. Please see logs"

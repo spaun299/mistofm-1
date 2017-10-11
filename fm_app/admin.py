@@ -4,7 +4,7 @@ from flask_admin.form.rules import Field
 from flask_admin.base import AdminIndexView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin import expose
-from flask_admin.actions import action
+from sqlalchemy.exc import IntegrityError
 from flask import Markup, g, flash, current_app as app, redirect, url_for
 from wtforms.fields.simple import PasswordField
 import config
@@ -111,6 +111,7 @@ class StationIcesView(AdminView):
     column_list = ('name', 'genre', 'description', 'bitrate', 'crossfade',
                    'server_host', 'server_port', 'server_rotocol',
                    'server_mountpoint', 'active', 'status')
+    form_excluded_columns = ('playlists',)
 
     def show_status(self, context, model, name):
         markup_string = '<span class="glyphicon {icon}" style="color:{color};font-size:40px;"></span>'
@@ -134,10 +135,10 @@ class StationIcesView(AdminView):
             form.populate_obj(model)
             self.session.add(model)
             self.session.flush()
-            model.create()
-            self.session.commit()
+            model.create(self.session)
         except IcesException as e:
             flash(e.message)
+            self.session.rollback()
             return False
         else:
             self.after_model_change(form, model, True)
@@ -154,7 +155,7 @@ class StationIcesView(AdminView):
         """
         try:
             form.populate_obj(model)
-            model.edit()
+            model.edit(self.session)
             self._on_model_change(form, model, False)
             self.session.commit()
         except Exception as ex:
@@ -164,13 +165,43 @@ class StationIcesView(AdminView):
             return False
         else:
             self.after_model_change(form, model, False)
-
         return True
 
 
 class PlaylistMusicView(AdminView):
     column_filters = ['playlist.name', 'song.song_name']
     column_searchable_list = ['playlist.name', 'song.song_name']
+    can_edit = False
+
+    def create_model(self, form):
+        """
+            Create model from form.
+
+            :param form:
+                Form instance
+        """
+        try:
+            model = self.model()
+            form.populate_obj(model)
+            self.session.add(model)
+            self._on_model_change(form, model, True)
+            self.session.commit()
+        except IntegrityError as e:
+            if "duplicate key" in str(e):
+                flash("The song is already in the playlist")
+            else:
+                flash('Failed to create record. Error:%s' % str(e))
+            self.session.rollback()
+            return False
+        except Exception as e:
+            if not self.handle_view_exception(e):
+                flash('Failed to create record. Error:%s' % str(e))
+            self.session.rollback()
+            return False
+        else:
+            self.after_model_change(form, model, True)
+
+        return model
 
 
 class MusicView(AdminView):
