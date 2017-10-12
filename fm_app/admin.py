@@ -60,12 +60,15 @@ class MultipleFileUploadField(FileUploadField):
 
     def populate_obj(self, obj, name):
         filenames = []
+        app.logger.debug("Populating uploaded files")
         for data in self.data:
             filename = self.generate_name(obj, data)
+            app.logger.debug("Uploading file %s ..." % filename)
             filename = self._save_file(data, filename)
             # update filename of FileStorage to our validated name
             data.filename = filename
             filenames.append(filename)
+        app.logger.debug("Setting file names to object")
         setattr(obj, name, filenames)
 
 
@@ -82,6 +85,7 @@ class AdminView(ModelView):
 
     @staticmethod
     def _image_preview(obj, context, model, name, img_height=100):
+        app.logger.debug("Changing image format on admin page")
         markup_string = '<img src="{url}" height={height}>'.format(url=model.image_url,
                                                                    height=img_height)
         return Markup(markup_string)
@@ -90,6 +94,7 @@ class AdminView(ModelView):
         return current_user.is_authenticated and current_user.user_type == 'admin'
 
     def inaccessible_callback(self, name, **kwargs):
+        app.logger.warning("Someone want to get into admin panel")
         return redirect(url_for('index.station'))
 
 
@@ -131,13 +136,19 @@ class StationIcesView(AdminView):
                 Form instance
         """
         try:
+            app.logger.debug("Creating new station")
             model = self.model()
+            app.logger.debug("Populating object")
             form.populate_obj(model)
+            app.logger.debug("Add object to session")
             self.session.add(model)
+            app.logger.debug("Flush session")
             self.session.flush()
             model.create(self.session)
         except IcesException as e:
             flash(e.message)
+            app.logger.error(e.message)
+            app.logger.debug("Rollback session during error")
             self.session.rollback()
             return False
         else:
@@ -154,13 +165,17 @@ class StationIcesView(AdminView):
                 Model instance
         """
         try:
+            app.logger.debug("Updating station")
             form.populate_obj(model)
             model.edit(self.session)
             self._on_model_change(form, model, False)
+            app.logger.debug("Commit session")
             self.session.commit()
         except Exception as ex:
+            app.logger.error(ex)
             if not self.handle_view_exception(ex):
                 flash('Failed to update record.')
+            app.logger.debug("Rollback session")
             self.session.rollback()
             return False
         else:
@@ -181,16 +196,22 @@ class PlaylistMusicView(AdminView):
                 Form instance
         """
         try:
+            app.logger.debug("Creating new playlist")
             model = self.model()
+            app.logger.debug("Populating playlist object")
             form.populate_obj(model)
+            app.logger.debug("Add playlist to session")
             self.session.add(model)
             self._on_model_change(form, model, True)
             self.session.commit()
         except IntegrityError as e:
             if "duplicate key" in str(e):
+                app.logger.debug("The song is already in playlist")
                 flash("The song is already in the playlist")
             else:
+                app.logger.error(str(e))
                 flash('Failed to create record. Error:%s' % str(e))
+            app.logger.debug("Rollback session")
             self.session.rollback()
             return False
         except Exception as e:

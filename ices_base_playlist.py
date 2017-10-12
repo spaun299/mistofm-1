@@ -9,6 +9,8 @@ import pytz
 import datetime
 import logging
 import logging.handlers
+import urllib2
+import urllib
 
 
 logger = logging.getLogger("")
@@ -49,6 +51,13 @@ class Model:
         self.played_songs_id = []
         self.station_playlists = []
         self.playlists_count = 0
+        self.metadata_add_url = "{host}/metadata/add/{station_id}/".format(host=config.METADATA_URL,
+                                                                           station_id=self.station_id)
+        self.metadata_get_url = "{host}/metadata/get/{station_id}/".format(host=config.METADATA_URL,
+                                                                           station_id=self.station_id)
+        self.metadata_body = \
+            {"username": config.METADATA_USERNAME,
+             "password": config.METADATA_PASSWORD}
 
     @property
     def current_hour(self):
@@ -156,6 +165,12 @@ def ices_init():
         model = Model(station_id)
         model.set_playlists(db.session)
         db.close_connection()
+        logger.debug("Check if metadata server is running")
+        try:
+            urllib2.urlopen(model.metadata_get_url)
+        except urllib2.HTTPError:
+            logger.error("Can't connect to metadata server")
+            return 0
         logger.debug("Module configured")
         return 1
     except ValueError:
@@ -175,4 +190,8 @@ def ices_get_next(*args, **kwargs):
     logger.debug("Getting song name")
     song_name = model.get_song(db.session)
     db.close_connection()
+    logger.debug("Send metadata to server")
+    model.metadata_body.update({"song_name": song_name})
+    request = urllib2.Request(model.metadata_add_url, urllib.urlencode(model.metadata_body))
+    urllib2.urlopen(request)
     return config.MUSIC_PATH + song_name

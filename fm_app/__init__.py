@@ -32,10 +32,13 @@ def init_app():
     db_url = get_database_uri(*db_config_fields)
     app.config.update(dict(SQLALCHEMY_DATABASE_URI=db_url))
     configure_logger(app)
+    app.logger.debug("Run ices modules")
     run_ices_modules(db_url)
+    app.logger.debug("Add before request handlers")
     app.before_request(lambda: load_db_session(db_url))
     app.before_request(get_current_user)
     app.teardown_request(teardown_request)
+    app.logger.debug("Register blueprints")
     register_blueprints(app)
     login_manager = LoginManager(app)
     login_manager.login_view = 'auth.login'
@@ -44,6 +47,7 @@ def init_app():
     db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
                                                  (user_db.Model, User), {}))
     user_manager = UserManager(db_adapter, app)
+    app.logger.debug("Init admin panel")
     init_admin_panel(app)
 
     @app.errorhandler(404)
@@ -64,11 +68,10 @@ def get_current_user():
 def configure_logger(app):
     log_handler = TimedRotatingFileHandler(config.LOG_PATH, "midnight",
                                            backupCount=config.LOG_ROTATE_COUNT)
-    log_handler.setLevel(logging.INFO)
-    if not config.DEBUG:
-        werkzeug_logger = logging.getLogger('werkzeug')
-        werkzeug_logger.setLevel(logging.INFO)
-        werkzeug_logger.addHandler(log_handler)
+    log_handler.setLevel(logging.ERROR)
+    werkzeug_logger = logging.getLogger('werkzeug')
+    werkzeug_logger.setLevel(logging.ERROR)
+    werkzeug_logger.addHandler(log_handler)
     app.logger.addHandler(log_handler)
 
 

@@ -20,3 +20,6 @@ ICES_PYTHON_BASE_MODULE_PATH = "/home/vkobryn/Projects/mistofm/ices_base_playlis
 ICES_PLAYLIST_LOG_FILE = "/home/vkobryn/mistofm/playlist.log"
 TMP_FOLDER = "/home/vkobryn/mistofm/tmp/"
 BASH_RUN_ICES = "/home/vkobryn/Projects/mistofm/run_ices.sh"
+METADATA_URL = "http://0.0.0.0:8777"
+METADATA_USERNAME = secret_data.METADATA_USERNAME
+METADATA_PASSWORD = secret_data.METADATA_PASSWORD

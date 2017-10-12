@@ -211,7 +211,8 @@ class StationIces(Base):
         return '{folder}{id}_ices.xml'.format(folder=config.ICES_CONFIGS_PATH,
                                               id=self.id)
 
-    def get_playlist_module_path(self):
+    @property
+    def playlist_module_path(self):
         return config.ICES_PYTHON_MODULES_PATH + self.ices_playlist_module
 
     def start_ices(self):
@@ -294,7 +295,7 @@ class StationIces(Base):
                 self.stop_ices()
 
     def delete_ices_from_file_system(self, tmp_file=None):
-        files = [self.ices_playlist_module, self.ices_config_path]
+        files = [self.playlist_module_path, self.playlist_module_path + 'c', self.ices_config_path]
         if tmp_file:
             files.append(tmp_file)
         for fname in files:
