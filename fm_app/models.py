@@ -26,17 +26,19 @@ class Station(Base):
     name = Column(VARCHAR(30), nullable=False)
     stream_url_music = Column(VARCHAR(200), nullable=False)
     stream_url_free_channel = Column(VARCHAR(200))
+    metadata_url = Column(VARCHAR(200))
     description_html = Column(VARCHAR(500))
     cr_tm = Column(DateTime, nullable=False)
     images = relationship('Image', secondary=station_image_table, backref="stations")
 
     def __init__(self, name=None, stream_url=None, description_html=None,
-                 stream_url_free_channel=None):
+                 stream_url_free_channel=None, metadata_url=None):
         self.name = name
         self.stream_url = stream_url
         self.stream_url_free_channel = stream_url_free_channel
         self.description_html = description_html
         self.cr_tm = datetime.datetime.now()
+        self.metadata_url = metadata_url
 
     def __repr__(self):
         return self.name

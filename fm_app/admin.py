@@ -113,7 +113,7 @@ class StationIcesView(AdminView):
             'validators': [DataRequired()]
         }
     }
-    column_list = ('name', 'genre', 'description', 'bitrate', 'crossfade',
+    column_list = ('id', 'name', 'genre', 'description', 'bitrate', 'crossfade',
                    'server_host', 'server_port', 'server_rotocol',
                    'server_mountpoint', 'active', 'status')
     form_excluded_columns = ('playlists',)
@@ -329,6 +329,17 @@ class StationView(AdminView):
                          'images': lambda view, context, model,
                                                     name: AdminView._image_preview(
                              view, context, model, name, 40)}
+    form_args = {
+        'stream_url_free_channel': {
+            'validators': [DataRequired()]
+        },
+        'metadata_url': {
+            'validators': [DataRequired()]
+        },
+        'description': {
+            'validators': [DataRequired()]
+        }
+    }
 
 
 class CustomizableField(Field):
