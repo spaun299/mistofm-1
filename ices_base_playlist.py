@@ -116,8 +116,11 @@ class Model:
                           WHERE pm.playlist_id=%s AND pm.id """ % playlist['id']
         if playlist['randomize']:
             self.previous_song_id = 0
-            query_string_random = query_string + """ NOT IN %s ORDER BY random() LIMIT 1; """ % tuple(
-                self.played_songs_id)
+            if self.played_songs_id:
+                query_string_random = query_string + """ NOT IN (%s) ORDER BY random() LIMIT 1; """ % \
+                                                     ', '.join(list(map(lambda s: str(s), self.played_songs_id)))
+            else:
+                query_string_random = query_string + """ IS NOT NULL ORDER BY random() LIMIT 1; """
             db_cursor.execute(query_string_random)
             song = db_cursor.fetchone()
             if song:
