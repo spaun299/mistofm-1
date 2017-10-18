@@ -52,8 +52,15 @@ def init_app():
 
     @app.errorhandler(404)
     def handle_404(err):
-        return render_template("404.html", stations=[st.name for st in
-                                                     g.db.query(Station.name).all()])
+        return render_template("error.html", code=404,
+                               message="Page not found",
+                               stations=[st.name for st in
+                                         g.db.query(Station.name).all()])
+
+    @app.errorhandler(500)
+    def handle_500(err):
+        app.logger.error("Internal server error. %s" % str(err))
+        return render_template("error.html", message="Server error", code=500)
     return app
 
 
