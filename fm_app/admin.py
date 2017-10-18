@@ -100,10 +100,11 @@ class AdminView(ModelView):
 
 class StationIcesView(AdminView):
 
-    form_ajax_refs = {'playlists': QueryAjaxModelLoader(
-        'playlists', get_db_session(get_database_uri(
+    db_session, _ = get_db_session(get_database_uri(
             config.DB_HOST, config.DB_USERNAME,
-            config.DB_PASSWORD, config.DB_NAME)), Playlist,
+            config.DB_PASSWORD, config.DB_NAME))
+    form_ajax_refs = {'playlists': QueryAjaxModelLoader(
+        'playlists', db_session, Playlist,
         filters=["station_id is NULL"], fields=['name'])}
     form_extra_fields = {
         'password': PasswordField('Password', [DataRequired()])

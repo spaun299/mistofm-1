@@ -18,11 +18,11 @@ def get_database_uri(host, username, password, db_name):
 def get_db_session(db_url):
     engine = create_engine(db_url,
                            echo=False)
-    engine.connect()
+    sql_connection = engine.connect()
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
-    return db_session
+    return db_session, sql_connection
 
 
 def copy_file(source_path, dest_folder, filename):
