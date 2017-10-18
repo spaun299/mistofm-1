@@ -83,32 +83,43 @@ def configure_logger(app):
 
 
 def load_db_session(db_url):
-    db_session = get_db_session(db_url)
+    db_session, connection = get_db_session(db_url)
     g.db = db_session
+    g.db_connection = connection
 
 
 def teardown_request(err):
-    g.db.remove()
+    db = getattr(g, 'db', None)
+    sql_connection = getattr(g, 'db_connection', None)
+    if db is not None:
+        if err:
+            db.rollback()
+        db.remove()
+    if sql_connection:
+        sql_connection.close()
 
 
 def run_ices_modules(db_url):
-    session = get_db_session(db_url)
+    session, connection = get_db_session(db_url)
     for station in session.query(StationIces).filter_by(active=True).all():
         if not station.running:
             station.start_ices()
+    session.remove()
+    connection.close()
 
 
 def init_admin_panel(app):
     admin = Admin(name="Mistofm", template_mode="bootstrap3",
                   index_view=IndexView(url=config.ADMIN_URL_PREFIX))
     admin.init_app(app)
-    db_session = get_db_session(app.config.get('SQLALCHEMY_DATABASE_URI'))
+    db_session, connection = get_db_session(app.config.get('SQLALCHEMY_DATABASE_URI'))
 
     # remove db session each time when close connection in
     # order to refresh data and get new session
     @admin.app.teardown_request
     def app_teardown(resp):
         db_session.remove()
+        connection.close()
         return resp
     admin.add_view(StationView(Station, db_session))
     admin.add_view(ImageView(Image, db_session))
