@@ -25,3 +25,7 @@ class IcesException(Error):
 
 class PlaylistException(IcesException):
     pass
+
+
+class SongAlreadyExists(Exception):
+    pass

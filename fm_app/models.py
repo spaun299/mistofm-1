@@ -140,6 +140,9 @@ class Music(Base):
     def songs(self, song_names):
         multiple_songs = []
         for val in song_names:
+            if file_exists(config.MUSIC_PATH + val):
+                flash("Song %s already exists" % val)
+                continue
             multiple_songs.append(Music(val))
         g.db.add_all(multiple_songs)
 
