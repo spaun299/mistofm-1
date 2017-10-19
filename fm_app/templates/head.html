@@ -3,7 +3,7 @@
         <title>Радио Misto FM {{ station.name }}</title>
 
         {% for tag in html_tags %}
-             {{ html_tag }}
+             {{ tag }}
         {% endfor %}
 
         <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
