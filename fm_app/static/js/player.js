@@ -94,7 +94,7 @@ $(document).ready(function() {
             contentType: "application/json; charset=utf-8"
         })
 
-        $.getJSON('http://www.whateverorigin.org/get?url=' + encodeURIComponent('http://mistofm.com.ua:8777/metadata/get/3/') + '&callback=?', function(data){})
+        $.getJSON('http://www.whateverorigin.org/get?url=' + encodeURIComponent(metadataUrl) + '&callback=?', function(data){})
         .done(function(data) {
             songContent = JSON.parse(data.contents);
             $("#onListen").empty();
