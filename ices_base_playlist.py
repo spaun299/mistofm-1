@@ -195,9 +195,11 @@ def ices_get_next(*args, **kwargs):
     db.close_connection()
     logger.debug("Send metadata to server")
     if not is_jingle:
-        if song_name.endswith('.mp3'):
-            song_name = song_name[:-4]
-        model.metadata_body.update({"song_name": song_name})
+        song_name_metadata = song_name
+        if song_name_metadata.endswith('.mp3'):
+            song_name_metadata = song_name[:-4]
+        model.metadata_body.update({"song_name": song_name_metadata})
         request = urllib2.Request(model.metadata_add_url, urllib.urlencode(model.metadata_body))
         urllib2.urlopen(request)
     return config.MUSIC_PATH + song_name
+
