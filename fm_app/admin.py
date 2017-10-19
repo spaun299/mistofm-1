@@ -8,7 +8,8 @@ from sqlalchemy.exc import IntegrityError
 from flask import Markup, g, flash, current_app as app, redirect, url_for
 from wtforms.fields.simple import PasswordField
 import config
-from utils import get_db_session, get_database_uri
+from utils import get_db_session, get_database_uri, get_disc_space, \
+    get_memory_usage
 from .models import Playlist
 from flask_user import current_user, login_required
 import ast
@@ -76,7 +77,10 @@ class IndexView(AdminIndexView):
     @expose()
     @login_required
     def index(self):
-        return self.render(self._template)
+        disc_space = get_disc_space()
+        memory_usage = get_memory_usage()
+        return self.render(self._template, disc_space=disc_space,
+                           memory_usage=memory_usage)
 
 
 class AdminView(ModelView):

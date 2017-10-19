@@ -393,3 +393,15 @@ class PlaylistMusic(Base):
 
     def __repr__(self):
         return 'Playlist:%s|Song:%s' % (self.playlist.name, self.song.song_name)
+
+
+class HtmlHeader(Base):
+    __tablename__ = 'html_header'
+    id = Column(Integer, primary_key=True)
+    html_tag = Column(String, unique=True, nullable=False)
+
+    def __init__(self, html_tag=None):
+        self.html_tag = html_tag
+
+    def __repr__(self):
+        return self.html_tag

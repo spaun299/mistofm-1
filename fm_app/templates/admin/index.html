@@ -2,4 +2,59 @@
 
 {% block body %}
     <h1>MistoFM Admin Panel</h1>
+    <h2 style="color:yellowgreen">Server health</h2>
+    {% if disc_space %}
+        <div class="table-responsive">
+  <table class="table table-condensed table-striped" >
+      <h3 style="color: #0b0b0b">Disk space</h3>
+      <tr><td>Partition</td><td>Disk space</td><td>Used space</td><td>Available space</td><td>%</td><td>Mounted on</td></tr>
+        {% for partition in disc_space %}
+            {% if partition["used_percent"] < 40 %}
+                {% set tr_color = "green" %}
+            {% elif partition["used_percent"] < 60 %}
+                {% set tr_color = "yellow" %}
+            {% elif partition["used_percent"] < 80 %}
+                {% set tr_color = "darkorange" %}
+            {% else %}
+                {% set tr_color = "red" %}
+            {% endif %}
+            <tr style="background-color: {{ tr_color }}">
+                <td>{{ partition["partition"] }}</td>
+                <td>{{ partition["all_space"] }}</td>
+                <td>{{ partition["used_space"] }}</td>
+                <td>{{ partition["available_space"] }}</td>
+                <td>{{ partition["used_percent"] }}</td>
+                <td>{{ partition["mount_point"] }}</td></tr>
+        {% endfor %}
+  </table>
+        </div>
+    {% endif %}
+
+
+            <div class="table-responsive">
+  <table class="table table-condensed table-striped" >
+      <h3 style="color: #0b0b0b">Memory usage</h3>
+      <tr><td></td><td>Total</td><td>Used</td><td>Free</td></tr>
+        {% for mem in memory_usage %}
+            {% if mem["free"] > 1500 %}
+                {% set tr_color = "green" %}
+            {% elif mem["free"] > 1000 %}
+                {% set tr_color = "yellow" %}
+            {% elif mem["free"] > 700 %}
+                {% set tr_color = "darkorange" %}
+            {% else %}
+                {% set tr_color = "red" %}
+            {% endif %}
+            <tr style="background-color: {{ tr_color }}">
+                <td>{{ mem["type"] }}</td>
+                <td>{{ mem["total"] }}M</td>
+                <td>{{ mem["used"] }}M</td>
+                <td>{{ mem["free"] }}M</td>
+            </tr>
+        {% endfor %}
+  </table>
+        </div>
+
+
+
 {% endblock %}

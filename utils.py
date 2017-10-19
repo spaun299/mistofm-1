@@ -70,3 +70,41 @@ def get_hours_from_timeframe(_from, _to):
     else:
         hours.append(_from)
     return hours
+
+
+def get_disc_space():
+    mount_points = ['/', '/var/www/mistofm']
+    partitions = []
+
+    for mount_point in mount_points:
+        try:
+            partition_space = list(filter(bool, str(subprocess.check_output(
+                ['bash', '-c', "df -h %s" % mount_point]),
+                'utf-8').split('\n')[-2].split(" ")))
+            partition_dict = dict(partition=partition_space[0],
+                                  all_space=partition_space[1],
+                                  used_space=partition_space[2],
+                                  available_space=partition_space[3],
+                                  used_percent=int(partition_space[4][:-1]),
+                                  mount_point=partition_space[5])
+            partitions.append(partition_dict)
+        except subprocess.CalledProcessError:
+            pass
+    return partitions
+
+
+def get_memory_usage():
+    mem_swap = ["Mem", "Swap"]
+    mem_swap_result = []
+    for ms in mem_swap:
+        memory = list(filter(bool, str(subprocess.check_output(
+            ['bash', '-c', "free -m | grep %s" % ms]),
+            'utf-8').replace("\n", "").split(' ')))[:4]
+        memory_dict = dict(
+            type=ms,
+            total=int(memory[1]),
+            used=int(memory[2]),
+            free=int(memory[3])
+        )
+        mem_swap_result.append(memory_dict)
+    return mem_swap_result
