@@ -106,7 +106,7 @@ class Model:
         playlist = self.current_playlist()
         if not playlist:
             logger.debug('There are no active playlists for the station')
-            return self.get_jingle(db_cursor)['song_name']
+            return self.get_jingle(db_cursor)['song_name'], True
         if self.previous_playlist_id != playlist['id']:
             self.previous_playlist_id = playlist['id']
             self.played_songs_id = []
@@ -125,14 +125,14 @@ class Model:
             song = db_cursor.fetchone()
             if song:
                 self.played_songs_id.append(song['id'])
-                return song['song_name']
+                return song['song_name'], False
             else:
                 query_string_random = query_string + """ > 0 ORDER BY random() LIMIT 1; """
                 db_cursor.execute(query_string_random)
                 song = db_cursor.fetchone()
                 if song:
                     self.played_songs_id = [song['id'], ]
-                    return song['song_name']
+                    return song['song_name'], False
                 else:
                     self.played_songs_id = []
                     logger.debug("Playlist %s doesn't have any songs" % playlist['name'])
@@ -143,19 +143,18 @@ class Model:
             song = db_cursor.fetchone()
             if song:
                 self.previous_song_id = song['id']
-                return song['song_name']
+                return song['song_name'], False
             else:
                 query_string_ordered = query_string + """ > 0 ORDER BY pm.id LIMIT 1; """
                 db_cursor.execute(query_string_ordered)
                 song = db_cursor.fetchone()
                 if song:
                     self.previous_song_id = song['id']
-                    return song['song_name']
+                    return song['song_name'], False
                 else:
                     self.previous_song_id = 0
                     logger.debug("Playlist %s doesn't have any songs" % playlist['name'])
-        return self.get_jingle(db_cursor)['song_name']
-
+        return self.get_jingle(db_cursor)['song_name'], True
 
 
 def ices_init():
@@ -192,10 +191,13 @@ def ices_get_next(*args, **kwargs):
     logger.debug("Updating playlists")
     model.update_playlists(db.session)
     logger.debug("Getting song name")
-    song_name = model.get_song(db.session)
+    song_name, is_jingle = model.get_song(db.session)
     db.close_connection()
     logger.debug("Send metadata to server")
-    model.metadata_body.update({"song_name": song_name})
-    request = urllib2.Request(model.metadata_add_url, urllib.urlencode(model.metadata_body))
-    urllib2.urlopen(request)
+    if not is_jingle:
+        if song_name.endswith('.mp3'):
+            song_name = song_name[:-4]
+        model.metadata_body.update({"song_name": song_name})
+        request = urllib2.Request(model.metadata_add_url, urllib.urlencode(model.metadata_body))
+        urllib2.urlopen(request)
     return config.MUSIC_PATH + song_name
