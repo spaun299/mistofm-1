@@ -15,7 +15,7 @@
                                 <a class="btn" href="{{ url_for('index.station', name=station_name) }}">{{ station_name }}
                                 </a>
                                 {% endfor %}
-                            {% else if code==500 %}
+                            {% elif code==500 %}
                                 <p>Oops! Something went wrong. Our engineers will fix this error asap</p>
                             {% endif %}
                             </div>
