@@ -10,9 +10,10 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 from sqlalchemy import event
 from utils import get_database_uri, get_db_session
-from .models import Station, Image, User, Playlist, PlaylistMusic, Music, StationIces
-from .admin import StationView, ImageView, IndexView, AdminView, StationIcesView,\
-    PlaylistView, PlaylistMusicView, MusicView
+from .models import Station, Image, User, Playlist, PlaylistMusic, Music, \
+    StationIces, HtmlHeader
+from .admin import StationView, ImageView, IndexView, AdminView,\
+    StationIcesView, PlaylistView, PlaylistMusicView, MusicView
 import os
 from .errors import IcesException
 
@@ -127,6 +128,7 @@ def init_admin_panel(app):
     admin.add_view(PlaylistView(Playlist, db_session))
     admin.add_view(StationIcesView(StationIces, db_session))
     admin.add_view(PlaylistMusicView(PlaylistMusic, db_session))
+    admin.add_view(AdminView(HtmlHeader, db_session))
     admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 
