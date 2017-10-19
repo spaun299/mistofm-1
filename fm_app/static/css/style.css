@@ -1298,6 +1298,11 @@ nav .add-drop-overview a {
         background: rgba(255, 255, 255, 0);
     }
 
+    .playlist .about-list .about-icon {
+        position: relative;
+        top: -1px;
+    }
+
     .mobile-toggle {
         border-left: 1px solid #ccc !important;
         border-bottom: none !important;
@@ -2100,11 +2105,7 @@ footer .btn.active, footer .btn:active {
     width: 9%;
     max-width: 9%;
     float: left;
-}
-
-.playlist .about-list .about-icon .fa {
-    color: #ccc;
-    font-size: 11px;
+    color: rgba(255, 255, 255, 0.7);
 }
 
 .playlist .about-list .about-name {
@@ -2482,14 +2483,41 @@ h1.large {
     border: none;
 }
 
+@media all and (max-width: 495px) {
+    .playlist .about-list {
+        padding: 0 5px 0 10px;
+    }
+
+    ul.playlist .about-list .about-icon {
+        width: 10%;
+        max-width: 10%;
+    }
+    ul.playlist .about-list .about-name {
+        width: 86%;
+    }
+}
+
 @media all and (max-width: 418px) {
     .no-page .btn {
-        padding: 0px 15px;
+        padding: 0 15px;
         min-width: 68px;
     }
 
     .icon.icon-lg {
         font-size: 46px;
+    }
+
+    ul.playlist .about-list .about-icon {
+        width: 12%;
+        max-width: 12%;
+    }
+
+}
+
+@media all and (max-width: 365px) {
+    ul.playlist .about-list .about-icon {
+        width: 14%;
+        max-width: 14%;
     }
 }
 
