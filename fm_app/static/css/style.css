@@ -1046,7 +1046,7 @@ nav .widget hr:first-of-type {
 
 .add-drop-widget-handle .function {
     width: auto;
-    min-width: 300px;
+    min-width: 470px;
     max-width: 610px;
     background: rgba(41, 41, 41, 0.6);
 }
@@ -1879,6 +1879,12 @@ iframe {
         display: none;
         top: -52px;
         padding: 5px 0px;
+    }
+}
+
+@media all and (max-width: 518px) {
+    .add-drop-widget-handle .function {
+        min-width: 290px;
     }
 }
 

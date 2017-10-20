@@ -93,14 +93,15 @@ $(document).ready(function() {
             scriptCharset: "utf-8",
             contentType: "application/json; charset=utf-8"
         })
-
-        $.getJSON('http://www.whateverorigin.org/get?url=' + encodeURIComponent(metadataUrl) + '&callback=?', function(data){})
+                                                                                        // metadataUrl
+        $.getJSON('http://www.whateverorigin.org/get?url=' + encodeURIComponent('http://metadata.mistofm.com.ua/metadata/get/3/') + '&callback=?', function(data){})
         .done(function(data) {
             songContent = JSON.parse(data.contents);
             $("#onListen").empty();
             $(".playlist").empty();
 
             $($(songContent).get().reverse()).each( function(n, songJson) {
+                $('#audio-player').prop('title', 'Misto Fm ☆ Lviv ☆ ' + songJson.name);
                 if (n == 0) {
                     var contentPlayNow = '<span>' + songJson.name + '</span>';
                     var contentPlayList = '<li class="about-list clearfix"><span class="about-icon">' + songJson.play_from + '</span><span class="about-name on-listen">' + songJson.name + '</span></li>';
