@@ -66,12 +66,17 @@ class Model:
     def get_hours_from_timeframe(self, _from, _to):
         hours = []
         while _from != _to:
-            hours.append(_from)
+            if _from == 24:
+                hours.append(0)
+            else:
+                hours.append(_from)
             if _from == 24:
                 _from = 1
             else:
                 _from += 1
         else:
+            if _from == 24:
+                _from = 0
             hours.append(_from)
         return hours
 
@@ -96,10 +101,10 @@ class Model:
         if db_cursor.fetchone()[0] != self.playlists_count:
             self.set_playlists(db_cursor)
 
-    @staticmethod
-    def get_jingle(db_cursor):
+    def get_jingle(self, db_cursor):
         db_cursor.execute(""" SELECT music.song_name FROM station_ices JOIN music
-                             ON station_ices.jingle_id=music.id LIMIT 1; """)
+                             ON station_ices.jingle_id=music.id 
+                             WHERE station_ices.id=%s LIMIT 1; """ % self.station_id)
         return db_cursor.fetchone()
 
     def get_song(self, db_cursor):
@@ -202,4 +207,3 @@ def ices_get_next(*args, **kwargs):
         request = urllib2.Request(model.metadata_add_url, urllib.urlencode(model.metadata_body))
         urllib2.urlopen(request)
     return config.MUSIC_PATH + song_name
-

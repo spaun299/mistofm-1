@@ -38,7 +38,6 @@ def init_app():
     app.logger.debug("Add before request handlers")
     app.before_request(lambda: load_db_session(db_url))
     app.before_request(get_current_user)
-    app.teardown_request(teardown_request)
     app.logger.debug("Register blueprints")
     register_blueprints(app)
     login_manager = LoginManager(app)
@@ -84,44 +83,47 @@ def configure_logger(app):
 
 
 def load_db_session(db_url):
-    db_session, connection = get_db_session(db_url)
+    db_session, connection, engine = get_db_session(db_url)
     g.db = db_session
     g.db_connection = connection
-
-
-def teardown_request(err):
-    db = getattr(g, 'db', None)
-    sql_connection = getattr(g, 'db_connection', None)
-    if db is not None:
-        if err:
-            db.rollback()
-        db.remove()
-    if sql_connection:
-        sql_connection.close()
+    g.engine = engine
 
 
 def run_ices_modules(db_url):
-    session, connection = get_db_session(db_url)
+    session, connection, engine = get_db_session(db_url)
     for station in session.query(StationIces).filter_by(active=True).all():
         if not station.running:
             station.start_ices()
     session.remove()
     connection.close()
+    engine.dispose()
 
 
 def init_admin_panel(app):
     admin = Admin(name="Mistofm", template_mode="bootstrap3",
                   index_view=IndexView(url=config.ADMIN_URL_PREFIX))
     admin.init_app(app)
-    db_session, connection = get_db_session(app.config.get('SQLALCHEMY_DATABASE_URI'))
+    db_session, connection, engine = get_db_session(app.config.get('SQLALCHEMY_DATABASE_URI'))
 
     # remove db session each time when close connection in
     # order to refresh data and get new session
     @admin.app.teardown_request
-    def app_teardown(resp):
+    def app_teardown(err):
         db_session.remove()
         connection.close()
-        return resp
+        engine.dispose()
+        db = getattr(g, 'db', None)
+        sql_connection = getattr(g, 'db_connection', None)
+        g_engine = getattr(g, 'engine', None)
+        if db is not None:
+            if err:
+                db.rollback()
+            db.remove()
+        if sql_connection:
+            sql_connection.close()
+        if g_engine:
+            g_engine.dispose()
+        return err
     admin.add_view(StationView(Station, db_session))
     admin.add_view(ImageView(Image, db_session))
     admin.add_view(MusicView(Music, db_session))

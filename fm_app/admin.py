@@ -107,7 +107,7 @@ class AdminView(ModelView):
 
 class StationIcesView(AdminView):
 
-    db_session, _ = get_db_session(get_database_uri(
+    db_session, *_ = get_db_session(get_database_uri(
             config.DB_HOST, config.DB_USERNAME,
             config.DB_PASSWORD, config.DB_NAME))
     form_ajax_refs = {'playlists': QueryAjaxModelLoader(
