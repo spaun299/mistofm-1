@@ -24,5 +24,7 @@
      js.src = "//connect.facebook.net/en_US/sdk.js";
      fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
+  {% if station is defined %}
   metadataUrl = '{{ station.metadata_url|safe }}';
+  {% endif %}
 </script>
