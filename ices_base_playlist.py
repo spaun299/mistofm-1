@@ -66,12 +66,17 @@ class Model:
     def get_hours_from_timeframe(self, _from, _to):
         hours = []
         while _from != _to:
-            hours.append(_from)
+            if _from == 24:
+                hours.append(0)
+            else:
+                hours.append(_from)
             if _from == 24:
                 _from = 1
             else:
                 _from += 1
         else:
+            if _from == 24:
+                _from = 0
             hours.append(_from)
         return hours
 
