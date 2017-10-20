@@ -22,7 +22,7 @@ def get_db_session(db_url):
     db_session = scoped_session(sessionmaker(autocommit=False,
                                              autoflush=False,
                                              bind=engine))
-    return db_session, sql_connection
+    return db_session, sql_connection, engine
 
 
 def copy_file(source_path, dest_folder, filename):
