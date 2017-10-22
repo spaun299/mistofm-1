@@ -100,6 +100,7 @@ $(document).ready(function() {
             $(".playlist").empty();
 
             $($(songContent).get().reverse()).each( function(n, songJson) {
+                $('#audio-player').prop('title', 'Misto Fm ☆ Lviv ☆ ' + songJson.name);
                 if (n == 0) {
                     var contentPlayNow = '<span>' + songJson.name + '</span>';
                     var contentPlayList = '<li class="about-list clearfix"><span class="about-icon">' + songJson.play_from + '</span><span class="about-name on-listen">' + songJson.name + '</span></li>';

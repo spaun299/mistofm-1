@@ -125,9 +125,10 @@ class Music(Base):
     playlists = relationship('Playlist', secondary='playlist_music',
                              back_populates='songs', lazy='dynamic')
 
-    def __init__(self, song_name=None, songs=[]):
+    def __init__(self, song_name=None, songs=[], playlists=[]):
         self.song_name = song_name
         self.songs = songs
+        self.playlists = playlists
 
     def __repr__(self):
         return self.song_name
@@ -336,13 +337,14 @@ class Playlist(Base):
                          lazy='dynamic')
 
     def __init__(self, name=None, randomize=False, play_from_hour=None, play_to_hour=None,
-                 active=True, station_ices=None):
+                 active=True, station_ices=None, songs=None):
         self.name = name
         self.randomize = randomize
         self.active = active
         self.play_from_hour = play_from_hour
         self.play_to_hour = play_to_hour
         self.station_ices = station_ices
+        self.songs = songs
 
     def __repr__(self):
         return self.name
