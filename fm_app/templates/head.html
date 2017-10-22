@@ -5,6 +5,18 @@
         {% for tag in html_tags %}
              {{ tag }}
         {% endfor %}
+        {% if station is defined %}
+        {% if station.name == 'deep' %}
+            <Meta Name="Keywords" Content="Радио, Misto Fm, Місто ФМ Львів, Дип, Дип Фм, Дип Хаус, Слушать Музыку Дип, Слушать Deep, Слушать Радио Онлайн, Онлайн, Online, Chill-Out, Чил-Аут, Чил Аут, Диско, Ню Диско, Nu Disco, Инди, Инди Денс, Indie Dance, Deep Онлайн, Deep Online, Радио Lounge Fm, Слушать Дип Онлайн, Bynthytn Hflbj, Радио Deep Fm, Lounge Радио Онлайн, Hflsj Jykfqy, Радіо Львів, Радіостанції Львова, Radio, Киев, Львов"/>
+            {% elif station.name == 'juda' %}
+            <Meta Name="Keywords" Content="Радио, Misto Fm, Місто ФМ Львів, Дип, Дип Фм, Дип Хаус, Слушать Музыку Дип, Слушать Deep, Слушать Радио Онлайн, Онлайн, Online, Chill-Out, Чил-Аут, Чил Аут, Диско, Ню Диско, Nu Disco, Инди, Инди Денс, Indie Dance, Deep Онлайн, Deep Online, Радио Lounge Fm, Слушать Дип Онлайн, Bynthytn Hflbj, Радио Deep Fm, Lounge Радио Онлайн, Hflsj Jykfqy, Радіо Львів, Радіостанції Львова, Radio, Киев, Львов"/>
+            {% elif station.name == 'beats' %}
+            <Meta Name="Keywords" Content="Радио, Misto Fm, Місто ФМ Львів, Дип, Дип Фм, Дип Хаус, Слушать Музыку Дип, Слушать Deep, Слушать Радио Онлайн, Онлайн, Online, Chill-Out, Чил-Аут, Чил Аут, Диско, Ню Диско, Nu Disco, Инди, Инди Денс, Indie Dance, Deep Онлайн, Deep Online, Радио Lounge Fm, Слушать Дип Онлайн, Bynthytn Hflbj, Радио Deep Fm, Lounge Радио Онлайн, Hflsj Jykfqy, Радіо Львів, Радіостанції Львова, Radio, Киев, Львов"/>
+            {% elif station.name == 'delmar' %}
+            <Meta Name="Keywords" Content="Радио, Misto Fm, Місто ФМ Львів, Дип, Дип Фм, Дип Хаус, Слушать Музыку Дип, Слушать Deep, Слушать Радио Онлайн, Онлайн, Online, Chill-Out, Чил-Аут, Чил Аут, Диско, Ню Диско, Nu Disco, Инди, Инди Денс, Indie Dance, Deep Онлайн, Deep Online, Радио Lounge Fm, Слушать Дип Онлайн, Bynthytn Hflbj, Радио Deep Fm, Lounge Радио Онлайн, Hflsj Jykfqy, Радіо Львів, Радіостанції Львова, Radio, Киев, Львов"/>
+            {% endif %}
+        {% endif %}
+
 
         <link rel="apple-touch-icon" sizes="180x180" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32x32.png') }}">

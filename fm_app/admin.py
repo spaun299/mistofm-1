@@ -128,13 +128,17 @@ class StationIcesView(AdminView):
             'validators': [DataRequired()]
         }
     }
-    column_list = ('id', 'name', 'genre', 'description', 'bitrate', 'crossfade',
+    column_list = ('id', 'name', 'genre', 'description', 'bitrate',
+                   'crossfade',
                    'server_host', 'server_port', 'server_rotocol',
-                   'server_mountpoint', 'active', 'status')
+                   'server_mountpoint', 'play_jingle_after_songs_count',
+                   'active', 'status',
+                   )
     form_excluded_columns = ('playlists',)
 
     def show_status(self, context, model, name):
-        markup_string = '<span class="glyphicon {icon}" style="color:{color};font-size:40px;"></span>'
+        markup_string = '<span class="glyphicon {icon}" ' \
+                        'style="color:{color};font-size:40px;"></span>'
         if model.running:
             icon, color = "glyphicon-ok-sign", "green"
         else:
