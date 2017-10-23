@@ -19,6 +19,7 @@ from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField, FileUploadField
 from flask_admin._compat import urljoin
 from .errors import IcesException, PlaylistException
+import re
 
 
 class MultipleFileUploadInput(object):
@@ -59,8 +60,11 @@ class MultipleFileUploadField(FileUploadField):
             if self._is_uploaded_file(value):
                 self.data.append(value)
 
-    def populate_obj(self, obj, name):
+    def populate_obj(self, obj):
         filenames = []
+        playlists = [g.db.query(Playlist).filter_by(id=int(_id)).one()
+                     for _id in re.findall(r'playlists\D+(\d+)',
+                                           str(self.formdata))]
         app.logger.debug("Populating uploaded files")
         for data in self.data:
             filename = self.generate_name(obj, data)
@@ -72,8 +76,11 @@ class MultipleFileUploadField(FileUploadField):
             # update filename of FileStorage to our validated name
             data.filename = filename
             filenames.append(filename)
-        app.logger.debug("Setting file names to object")
-        setattr(obj, name, filenames)
+            app.logger.debug("Creating new instance for each song")
+            music_obj = obj.__class__(song_name=filename,
+                                      playlists=playlists)
+            app.logger.debug("Adding song to db session")
+            g.db.add(music_obj)
 
 
 class IndexView(AdminIndexView):
@@ -121,13 +128,17 @@ class StationIcesView(AdminView):
             'validators': [DataRequired()]
         }
     }
-    column_list = ('id', 'name', 'genre', 'description', 'bitrate', 'crossfade',
+    column_list = ('id', 'name', 'genre', 'description', 'bitrate',
+                   'crossfade',
                    'server_host', 'server_port', 'server_rotocol',
-                   'server_mountpoint', 'active', 'status')
+                   'server_mountpoint', 'play_jingle_after_songs_count',
+                   'active', 'status',
+                   )
     form_excluded_columns = ('playlists',)
 
     def show_status(self, context, model, name):
-        markup_string = '<span class="glyphicon {icon}" style="color:{color};font-size:40px;"></span>'
+        markup_string = '<span class="glyphicon {icon}" ' \
+                        'style="color:{color};font-size:40px;"></span>'
         if model.running:
             icon, color = "glyphicon-ok-sign", "green"
         else:
@@ -257,7 +268,7 @@ class MusicView(AdminView):
         """
         try:
             model = self.model()
-            form.populate_obj(model)
+            form.songs.populate_obj(model)
             self._on_model_change(form, model, True)
             g.db.commit()
         except Exception as ex:

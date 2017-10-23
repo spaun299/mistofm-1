@@ -133,16 +133,16 @@ class Music(Base):
     def __repr__(self):
         return self.song_name
 
-    @property
-    def songs(self):
-        return self.song_name
-
-    @songs.setter
-    def songs(self, song_names):
-        multiple_songs = []
-        for val in song_names:
-            multiple_songs.append(Music(val))
-        g.db.add_all(multiple_songs)
+    # @property
+    # def songs(self):
+    #     return self.song_name
+    #
+    # @songs.setter
+    # def songs(self, song_names):
+    #     multiple_songs = []
+    #     for val in song_names:
+    #         multiple_songs.append(Music(val, playlists=self.playlists))
+    #     g.db.add_all(multiple_songs)
 
     def delete_song(self):
         try:
@@ -165,11 +165,13 @@ class StationIces(Base):
     server_rotocol = Column(VARCHAR(20), nullable=False, default='http')
     server_mountpoint = Column(VARCHAR(100), nullable=False)
     active = Column(Boolean, default=True)
+    play_jingle_after_songs_count = Column(Integer, default=5)
     jingle = relationship('Music', backref='stations')
 
     def __init__(self, name=None, genre=None, description=None, bitrate=128,
                  crossfade=10, active=True, server_host=None, server_port=None,
-                 server_rotocol=None, server_mountpoint=None, password=None, jingle=None, **kwargs):
+                 server_rotocol=None, server_mountpoint=None, password=None,
+                 jingle=None, play_jingle_after_songs_count=None, **kwargs):
         self.name = name
         self.genre = genre
         self.description = description
@@ -181,6 +183,7 @@ class StationIces(Base):
         self.server_rotocol = server_rotocol
         self.server_mountpoint = server_mountpoint
         self.jingle = jingle
+        self.play_jingle_after_songs_count = play_jingle_after_songs_count
         # Note: password will not be saved into the database.
         # It's just for creating isec config file
         self.password = password
@@ -337,7 +340,7 @@ class Playlist(Base):
                          lazy='dynamic')
 
     def __init__(self, name=None, randomize=False, play_from_hour=None, play_to_hour=None,
-                 active=True, station_ices=None, songs=None):
+                 active=True, station_ices=None, songs=[]):
         self.name = name
         self.randomize = randomize
         self.active = active

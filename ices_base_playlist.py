@@ -44,6 +44,7 @@ class Model:
     def __init__(self, station_id):
         self.station_id = station_id
         self.timezone = pytz.timezone('Europe/Uzhgorod')
+        self.jingle_didnt_played = 0
         self.previous_playlist_id = 0
         self.previous_song_id = 0
         # if playlist play random songs we will add each
@@ -51,13 +52,18 @@ class Model:
         self.played_songs_id = []
         self.station_playlists = []
         self.playlists_count = 0
-        self.metadata_add_url = "{host}/metadata/add/{station_id}/".format(host=config.METADATA_URL,
-                                                                           station_id=self.station_id)
-        self.metadata_get_url = "{host}/metadata/get/{station_id}/".format(host=config.METADATA_URL,
-                                                                           station_id=self.station_id)
+        self.metadata_add_url = "{host}/metadata/add/{station_id}/".format(
+            host=config.METADATA_URL, station_id=self.station_id)
+        self.metadata_get_url = "{host}/metadata/get/{station_id}/".format(
+            host=config.METADATA_URL, station_id=self.station_id)
         self.metadata_body = \
             {"username": config.METADATA_USERNAME,
              "password": config.METADATA_PASSWORD}
+
+    def play_jingle_after(self, db_cursor):
+        db_cursor.execute(""" SELECT play_jingle_after_songs_count
+                          FROM station_ices WHERE id=%s LIMIT 1;""" % self.station_id)
+        return db_cursor.fetchone()[0]
 
     @property
     def current_hour(self):
@@ -111,6 +117,8 @@ class Model:
         playlist = self.current_playlist()
         if not playlist:
             logger.debug('There are no active playlists for the station')
+            return self.get_jingle(db_cursor)['song_name'], True
+        if self.jingle_didnt_played >= self.play_jingle_after(db_cursor):
             return self.get_jingle(db_cursor)['song_name'], True
         if self.previous_playlist_id != playlist['id']:
             self.previous_playlist_id = playlist['id']
@@ -206,4 +214,7 @@ def ices_get_next(*args, **kwargs):
         model.metadata_body.update({"song_name": song_name_metadata})
         request = urllib2.Request(model.metadata_add_url, urllib.urlencode(model.metadata_body))
         urllib2.urlopen(request)
+        model.jingle_didnt_played += 1
+    if is_jingle:
+        model.jingle_didnt_played = 0
     return config.MUSIC_PATH + song_name
