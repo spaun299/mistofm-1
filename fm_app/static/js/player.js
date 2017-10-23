@@ -85,12 +85,13 @@ $(document).ready(function() {
         audio.volume = val;
         });
 
-        (function radioTitle() {
+    (function radioTitle() {
 
         var songContent;
         $.ajaxSetup({
             scriptCharset: "utf-8",
-            contentType: "application/json; charset=utf-8"
+            contentType: "application/json; charset=utf-8",
+            cache: false
         })
 
         $.getJSON(metadataUrl, function(data){})
@@ -100,12 +101,12 @@ $(document).ready(function() {
             $(".playlist").empty();
 
             $($(songContent).get().reverse()).each( function(n, songJson) {
-                $('#audio-player').prop('title', 'Misto Fm ☆ Lviv ☆ ' + songJson.name);
                 if (n == 0) {
                     var contentPlayNow = '<span>' + songJson.name + '</span>';
                     var contentPlayList = '<li class="about-list clearfix"><span class="about-icon">' + songJson.play_from + '</span><span class="about-name on-listen">' + songJson.name + '</span></li>';
                     $(contentPlayList).appendTo(".playlist");
                     $(contentPlayNow).appendTo("#onListen");
+                    $(audio).prop('title', 'Misto Fm ☆ Lviv ☆ ' + songJson.name);
                 } else {
                     var contentPlayList = '<li class="about-list clearfix"><span class="about-icon">' + songJson.play_from + '</span><span class="about-name on-listen">' + songJson.name + '</span></li>';
                     $(contentPlayList).appendTo(".playlist");
