@@ -1,6 +1,6 @@
 
         <meta charset="utf-8">
-        <title>Радио Misto FM {% if station is defined %}{{ station.name }}{% endif %}</title>
+        <title>Радио Misto FM {% if station is defined %}{{ capitalize_string(station.name) }}{% endif %}</title>
 
         {% for tag in html_tags %}
              {{ tag }}

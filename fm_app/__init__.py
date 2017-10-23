@@ -16,6 +16,7 @@ from .admin import StationView, ImageView, IndexView, AdminView,\
     StationIcesView, PlaylistView, PlaylistMusicView, MusicView
 import os
 from .errors import IcesException
+import jinja2
 
 
 def init_app():
@@ -47,6 +48,7 @@ def init_app():
     db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
                                                  (user_db.Model, User), {}))
     user_manager = UserManager(db_adapter, app)
+    app.jinja_env.globals.update(capitalize_string=capitalize_string)
     app.logger.debug("Init admin panel")
     init_admin_panel(app)
 
@@ -163,3 +165,8 @@ def delete_station(mapper, connection, target):
 @event.listens_for(Music, 'after_delete')
 def delete_music(mapper, connection, target):
     target.delete_song()
+
+
+@jinja2.contextfunction
+def capitalize_string(val):
+    return val.capitalize()
