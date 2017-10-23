@@ -87,7 +87,7 @@ class Model:
         return hours
 
     def set_playlists(self, db_cursor):
-        db_cursor.execute(""" SELECT id, randomize, play_from_hour play_from, play_to_hour play_to 
+        db_cursor.execute(""" SELECT id, name, randomize, play_from_hour play_from, play_to_hour play_to
                                   FROM playlist WHERE active=TRUE AND station_id=%s;""" % self.station_id)
         playlists = db_cursor.fetchall()
         self.playlists_count = len(playlists)
