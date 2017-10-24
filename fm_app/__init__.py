@@ -167,6 +167,5 @@ def delete_music(mapper, connection, target):
     target.delete_song()
 
 
-@jinja2.contextfunction
 def capitalize_string(val):
     return val.capitalize()

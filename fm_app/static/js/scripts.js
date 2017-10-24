@@ -115,6 +115,9 @@ $(document).ready(function() {
 
 var mr_firstSectionHeight, mr_nav, mr_fixedAt, mr_navOuterHeight, mr_navScrolled = !1, mr_navFixed = !1, mr_outOfSight = !1, mr_floatingProjectSections, mr_scrollTop = 0;
 
+function getCurrentTimeInSeconds(){
+    return new Date().getTime() / 1000;
+};
 function updateNav() {
     var a = mr_scrollTop;
     if (0 >= a)

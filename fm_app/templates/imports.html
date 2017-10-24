@@ -26,5 +26,6 @@
   }(document, 'script', 'facebook-jssdk'));
   {% if station is defined %}
   metadataUrl = '{{ station.metadata_url|safe }}';
+  stream_url = '{{ station.stream_url_free_channel }}';
   {% endif %}
 </script>

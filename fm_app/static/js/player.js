@@ -1,9 +1,12 @@
 var audio = document.getElementById("audio-player");
 var metadataUrl;
+var stream_url;
+var currentTime;
 
 $(document).ready(function() {
 
     var player = $('.player');
+    currentTime = getCurrentTimeInSeconds();
 
     player.on('click', '.btn-player', function(e){
         e.preventDefault();
@@ -11,13 +14,17 @@ $(document).ready(function() {
                 $(this).removeClass('play');
                 $(this).addClass('pause');
                 audio.play();
-            // audio.currentTime = 0;
+                audio.currentTime = getCurrentTimeInSeconds() - currentTime;
         } else {
                 $(this).removeClass('pause');
                 $(this).addClass('play');
-
                 audio.pause();
-            // audio.currentTime = 0;
+                audio.src = "";
+                audio.load();
+                $("audio").remove();
+                currentTime = getCurrentTimeInSeconds();
+                $("audio-player-wrapper").html("<audio id='audio-player' preload='metadata' title='Misto Fm ☆ Lviv ☆ On Air'></audio>");
+                audio.src = stream_url;
         }
     });
 
