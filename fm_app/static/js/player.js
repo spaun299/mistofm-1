@@ -13,8 +13,17 @@ $(document).ready(function() {
         if ( $(this).hasClass('play') ) {
                 $(this).removeClass('play');
                 $(this).addClass('pause');
+                var seconds_played = getCurrentTimeInSeconds() - currentTime;
+                if (seconds_played > 600) {
+                    audio.src = "";
+                    audio.load();
+                    audio.src = stream_url;
+                    audio.load();
+                }
+                else{
+                    audio.currentTime = seconds_played;
+                }
                 audio.play();
-                audio.currentTime = getCurrentTimeInSeconds() - currentTime;
         } else {
                 $(this).removeClass('pause');
                 $(this).addClass('play');
@@ -25,6 +34,7 @@ $(document).ready(function() {
                 currentTime = getCurrentTimeInSeconds();
                 $("audio-player-wrapper").html("<audio id='audio-player' preload='metadata' title='Misto Fm ☆ Lviv ☆ On Air'></audio>");
                 audio.src = stream_url;
+                audio.load()
         }
     });
 
