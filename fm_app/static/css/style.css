@@ -1914,6 +1914,10 @@ iframe {
     .empty {
         display: none;
     }
+    
+    input[type=range] {
+        display: none;
+    }
 }
 
 @media all and (max-width: 1024px) {
@@ -1930,17 +1934,17 @@ iframe {
 /*@media Height*/
 @media all and (max-height: 667px) {
     .container .bottom-player-side {
-        bottom: 80px;
+        /*bottom: 80px;*/
     }
 
     .align-bottom hr {
-        bottom: 75px;
+        /*bottom: 75px;*/
     }
 }
 
 @media all and (max-height: 412px) {
     .container .bottom-player-side {
-        bottom: 100px;
+        /*bottom: 100px;*/
     }
 
     .align-bottom hr {
@@ -1950,7 +1954,7 @@ iframe {
 
 @media all and (max-height: 375px) {
     .container .bottom-player-side {
-        bottom: 110px;
+        /*bottom: 110px;*/
     }
 
     .align-bottom hr {
@@ -1960,22 +1964,22 @@ iframe {
 
 @media all and (max-height: 360px) {
     .container .bottom-player-side {
-        bottom: 130px;
+        /*bottom: 130px;*/
     }
 
     .align-bottom hr {
-        bottom: 125px;
+        /*bottom: 125px;*/
     }
 }
 
 @media all and (max-height: 320px) {
     .container .bottom-player-side {
-        bottom: 165px;
+        /*bottom: 165px;*/
         height: auto;
     }
 
     .align-bottom hr {
-        bottom: 160px;
+        /*bottom: 160px;*/
     }
 }
 
