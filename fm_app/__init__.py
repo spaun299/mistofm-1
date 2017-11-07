@@ -1,25 +1,27 @@
-from flask import Flask, g, render_template, current_app
+from flask import Flask, g, render_template
 from flask_admin import Admin
 from flask_admin.menu import MenuLink
 from flask_login import LoginManager, current_user
 from flask_user import UserManager, SQLAlchemyAdapter
+from flask.sessions import SecureCookieSessionInterface
 import config
-from .blueprints import register_blueprints
+from .blueprints import register_blueprints_web, \
+    register_blueprints_admin, register_blueprints_api
 from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from sqlalchemy import event
-from utils import get_database_uri, get_db_session, capitalize_string
+from utils import get_database_uri, get_db_session, capitalize_string, json_response
 from .models import Station, Image, User, Playlist, PlaylistMusic, Music, \
     StationIces, HtmlHeader
 from .admin import StationView, ImageView, IndexView, AdminView,\
     StationIcesView, PlaylistView, PlaylistMusicView, MusicView
 import os
 from .errors import IcesException
-import jinja2
+import base64
 
 
-def init_app():
+def get_base_app():
     app = Flask(__name__)
     app.config.from_object(config)
     create_necessary_folders()
@@ -34,23 +36,17 @@ def init_app():
     db_url = get_database_uri(*db_config_fields)
     app.config.update(dict(SQLALCHEMY_DATABASE_URI=db_url))
     configure_logger(app)
-    app.logger.debug("Run ices modules")
-    run_ices_modules(db_url)
     app.logger.debug("Add before request handlers")
     app.before_request(lambda: load_db_session(db_url))
-    app.before_request(get_current_user)
+    return app
+
+
+def init_app_web():
+    app = get_base_app()
     app.logger.debug("Register blueprints")
-    register_blueprints(app)
-    login_manager = LoginManager(app)
-    login_manager.login_view = 'auth.login'
-    login_manager.user_loader(load_user)
-    user_db = SQLAlchemy(app)
-    db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
-                                                 (user_db.Model, User), {}))
-    user_manager = UserManager(db_adapter, app)
+    register_blueprints_web(app)
+    app.teardown_request(app_teardown)
     app.jinja_env.globals.update(capitalize_string=capitalize_string)
-    app.logger.debug("Init admin panel")
-    init_admin_panel(app)
 
     @app.errorhandler(404)
     def handle_404(err):
@@ -66,8 +62,130 @@ def init_app():
     return app
 
 
+def init_app_admin():
+    app = get_base_app()
+    app.logger.debug("Run ices modules")
+    run_ices_modules(app.config['SQLALCHEMY_DATABASE_URI'])
+    app.before_request(get_current_user)
+    app.logger.debug("Register blueprints")
+    register_blueprints_admin(app)
+    login_manager = LoginManager(app)
+    login_manager.login_view = 'auth.login'
+    login_manager.user_loader(load_user)
+    user_db = SQLAlchemy(app)
+    db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
+                                                 (user_db.Model, User), {}))
+    user_manager = UserManager(db_adapter, app)
+    admin = Admin(name="Mistofm", template_mode="bootstrap3",
+                  index_view=IndexView(url=config.ADMIN_URL_PREFIX))
+    admin.init_app(app)
+    db_session, connection, engine = get_db_session(app.config.get('SQLALCHEMY_DATABASE_URI'))
+
+    # remove db session each time when close connection in
+    # order to refresh data and get new session
+    @app.teardown_request
+    def teardown(err):
+        db_session.remove()
+        connection.close()
+        engine.dispose()
+        db = getattr(g, 'db', None)
+        sql_connection = getattr(g, 'db_connection', None)
+        g_engine = getattr(g, 'engine', None)
+        if db is not None:
+            if err:
+                db.rollback()
+            db.remove()
+        if sql_connection:
+            sql_connection.close()
+        if g_engine:
+            g_engine.dispose()
+        return err
+    admin.add_view(StationView(Station, db_session))
+    admin.add_view(ImageView(Image, db_session))
+    admin.add_view(MusicView(Music, db_session))
+    admin.add_view(PlaylistView(Playlist, db_session))
+    admin.add_view(StationIcesView(StationIces, db_session))
+    admin.add_view(PlaylistMusicView(PlaylistMusic, db_session))
+    admin.add_view(AdminView(HtmlHeader, db_session))
+    admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
+    return app
+
+
+def init_app_api():
+    app = get_base_app()
+    app.teardown_request(app_teardown)
+    app.before_request(get_current_user)
+    app.logger.debug("Register blueprints")
+    register_blueprints_api(app)
+    login_manager = LoginManager(app)
+    login_manager.request_loader(load_user_api)
+    user_db = SQLAlchemy(app)
+    db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
+                                                 (user_db.Model, User), {}))
+    user_manager = UserManager(db_adapter, app)
+    # disable session cookies
+    app.session_interface = type('SessionInterface',
+                                 (SecureCookieSessionInterface, ),
+                                 {'save_session': lambda *args, **kwargs: None})()
+
+    @app.errorhandler(404)
+    def error_404(err):
+        logging.debug("Page not found")
+        return json_response(err=True, message='Not found', code=404), 404
+
+    @app.errorhandler(400)
+    def error_400(err):
+        logging.debug("Bad request")
+        return json_response(err=True, message='Bad request', code=400), 400
+
+    @app.errorhandler(500)
+    def error_500(err):
+        logging.debug("Internal server error")
+        return json_response(err=True, message='Internal server error', code=500), 500
+    return app
+
+
+def app_teardown(err):
+    db = getattr(g, 'db', None)
+    sql_connection = getattr(g, 'db_connection', None)
+    g_engine = getattr(g, 'engine', None)
+    if db is not None:
+        if err:
+            db.rollback()
+        db.remove()
+    if sql_connection:
+        sql_connection.close()
+    if g_engine:
+        g_engine.dispose()
+    return err
+
+
 def load_user(_id):
     return g.db.query(User).filter_by(id=int(_id)).one()
+
+
+def load_user_api(request):
+
+    # first, try to login using Basic Auth
+    api_key = request.headers.get('Authorization')
+    if api_key:
+        api_key = api_key.replace('Basic ', '', 1)
+        try:
+            api_key = base64.b64decode(api_key)
+        except TypeError:
+            pass
+        user = g.db.query(User).filter_by(api_key=api_key).first()
+        if user:
+            return user
+    # next, try to login using the api_key url arg
+    api_key = request.args.get('api_key')
+    if api_key:
+        user = g.db.query(User).filter_by(api_key=api_key).first()
+        if user:
+            return user
+
+    # finally, return None if both methods did not login the user
+    return None
 
 
 def get_current_user():
@@ -99,41 +217,6 @@ def run_ices_modules(db_url):
     session.remove()
     connection.close()
     engine.dispose()
-
-
-def init_admin_panel(app):
-    admin = Admin(name="Mistofm", template_mode="bootstrap3",
-                  index_view=IndexView(url=config.ADMIN_URL_PREFIX))
-    admin.init_app(app)
-    db_session, connection, engine = get_db_session(app.config.get('SQLALCHEMY_DATABASE_URI'))
-
-    # remove db session each time when close connection in
-    # order to refresh data and get new session
-    @admin.app.teardown_request
-    def app_teardown(err):
-        db_session.remove()
-        connection.close()
-        engine.dispose()
-        db = getattr(g, 'db', None)
-        sql_connection = getattr(g, 'db_connection', None)
-        g_engine = getattr(g, 'engine', None)
-        if db is not None:
-            if err:
-                db.rollback()
-            db.remove()
-        if sql_connection:
-            sql_connection.close()
-        if g_engine:
-            g_engine.dispose()
-        return err
-    admin.add_view(StationView(Station, db_session))
-    admin.add_view(ImageView(Image, db_session))
-    admin.add_view(MusicView(Music, db_session))
-    admin.add_view(PlaylistView(Playlist, db_session))
-    admin.add_view(StationIcesView(StationIces, db_session))
-    admin.add_view(PlaylistMusicView(PlaylistMusic, db_session))
-    admin.add_view(AdminView(HtmlHeader, db_session))
-    admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
 
 
 def create_necessary_folders():

@@ -199,7 +199,6 @@ class StationIces(Base):
     def ices_playlist_module(self):
         return 'playlist_%s.py' % self.id
 
-
     @property
     def pid(self):
         _pid = get_pid_by_args('ices', self.ices_config_path)
