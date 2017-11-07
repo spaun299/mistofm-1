@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
+from flask import jsonify
 import os
 import shutil
 import subprocess
@@ -108,3 +109,12 @@ def get_memory_usage():
         )
         mem_swap_result.append(memory_dict)
     return mem_swap_result
+
+
+def capitalize_string(val):
+    return val.capitalize()
+
+
+def json_response(err=False, **kwargs):
+    kwargs.update(dict(err=True if err else False))
+    return jsonify(kwargs)

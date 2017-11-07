@@ -2,7 +2,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
     String, Boolean, DateTime, Table, UniqueConstraint
-from flask import g, flash, current_app
+from flask import flash, current_app
 import datetime
 import config
 from utils import copy_file, move_file, delete_file, run_cli_script, file_exists, kill_process, get_pid_by_args, \
@@ -198,7 +198,6 @@ class StationIces(Base):
     @property
     def ices_playlist_module(self):
         return 'playlist_%s.py' % self.id
-
 
     @property
     def pid(self):

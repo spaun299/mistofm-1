@@ -1,0 +1,17 @@
+Supported endpoints:
+
+1: Stations status
+
+PATH: /health/stations
+METHOD: GET
+Response example:
+{
+  "err": false,
+  "stations": [
+    {
+      "active": true,
+      "id": 81,
+      "running": true
+    }
+  ]
+}
