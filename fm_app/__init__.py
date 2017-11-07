@@ -9,7 +9,7 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from sqlalchemy import event
-from utils import get_database_uri, get_db_session
+from utils import get_database_uri, get_db_session, capitalize_string
 from .models import Station, Image, User, Playlist, PlaylistMusic, Music, \
     StationIces, HtmlHeader
 from .admin import StationView, ImageView, IndexView, AdminView,\
@@ -165,7 +165,3 @@ def delete_station(mapper, connection, target):
 @event.listens_for(Music, 'after_delete')
 def delete_music(mapper, connection, target):
     target.delete_song()
-
-
-def capitalize_string(val):
-    return val.capitalize()

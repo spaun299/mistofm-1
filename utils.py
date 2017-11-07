@@ -108,3 +108,7 @@ def get_memory_usage():
         )
         mem_swap_result.append(memory_dict)
     return mem_swap_result
+
+
+def capitalize_string(val):
+    return val.capitalize()
