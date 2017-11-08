@@ -26,8 +26,9 @@ hr {
     margin: 0 0 24px 0;
     width: 100%;
     position: relative;
-    /*bottom: 80px;*/
-    bottom: 70px;
+    /*bottom: 70px;*/
+    top: 14px;
+    z-index: 9;
 }
 
 hr.short-thick {
@@ -1863,7 +1864,7 @@ iframe {
 
     .bottom-player-side .bottom-player-block .track {
         top: 12px;
-        padding: 20px;
+        padding: 5px;
     }
 
     .container .bottom-player-side {
@@ -1916,7 +1917,7 @@ iframe {
     }
     
     input[type=range] {
-        display: none;
+        /*display: none;*/
         /*visibility: hidden;*/
     }
 }
