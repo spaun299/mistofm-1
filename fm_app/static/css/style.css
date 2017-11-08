@@ -1863,7 +1863,7 @@ iframe {
 
     .bottom-player-side .bottom-player-block .track {
         top: 12px;
-        padding: 5px;
+        padding: 20px;
     }
 
     .container .bottom-player-side {
@@ -1916,8 +1916,8 @@ iframe {
     }
     
     input[type=range] {
-        /*display: none;*/
-        visibility: hidden;
+        display: none;
+        /*visibility: hidden;*/
     }
 }
 
@@ -1935,11 +1935,11 @@ iframe {
 /*@media Height*/
 @media all and (max-height: 667px) {
     .container .bottom-player-side {
-        /*bottom: 80px;*/
+        bottom: 80px;
     }
 
     .align-bottom hr {
-        /*bottom: 75px;*/
+        bottom: 75px;
     }
 }
 
