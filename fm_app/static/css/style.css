@@ -1910,7 +1910,7 @@ iframe {
 
 @media all and (min-width: 768px) {
     .container .bottom-player-side {
-        bottom: 28px;
+        bottom: 40px;
         height: auto;
     }
 
@@ -2255,17 +2255,17 @@ footer .btn.active, footer .btn:active {
 }
 
 .bottom-player-side .bottom-player-block .btn-player {
-    top: 34px;
+    top: 38px;
 }
 
 .bottom-player-block .track {
-    top: 42px;
+    top: 44px;
     width: 100%;
 }
 
 .bottom-player-block .social-icons {
     position: relative;
-    top: 26px;
+    top: 30px;
     padding: 8px 0px;
 }
 
