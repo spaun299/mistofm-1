@@ -26,7 +26,15 @@ hr {
     margin: 0 0 24px 0;
     width: 100%;
     position: relative;
-    /*bottom: 70px;*/
+    bottom: 70px;
+}
+
+.bottom-player-side hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 0 0 24px 0;
+    width: 100%;
+    position: relative;
     top: 14px;
     z-index: 9;
 }
@@ -1902,7 +1910,7 @@ iframe {
 
 @media all and (min-width: 768px) {
     .container .bottom-player-side {
-        bottom: 15px;
+        bottom: 28px;
         height: auto;
     }
 
