@@ -113,31 +113,34 @@ def init_app_admin():
 
 def init_app_api():
     app = get_base_app()
-    # app.before_request(get_current_user)
     app.logger.debug("Register blueprints")
     register_blueprints_api(app)
     app.teardown_request(app_teardown)
-
-    @app.errorhandler(404)
-    def error_404(err):
-        logging.debug("Page not found")
-        return json_response(err=True, message='Not found', code=404), 404
 
     @app.errorhandler(400)
     def error_400(err):
         logging.debug("Bad request")
         return json_response(err=True, message='Bad request', code=400), 400
 
-    @app.errorhandler(500)
-    def error_500(err):
-        logging.debug("Internal server error")
-        return json_response(err=True, message='Internal server error', code=500), 500
-
     @app.errorhandler(401)
     def error_401(err):
         logging.debug("Internal server error")
         return json_response(err=True, message='Not authorized', code=401), 401
 
+    @app.errorhandler(404)
+    def error_404(err):
+        logging.debug("Page not found")
+        return json_response(err=True, message='Not found', code=404), 404
+
+    @app.errorhandler(405)
+    def error_405(err):
+        logging.debug("Bad request")
+        return json_response(err=True, message='Method not allowed', code=405), 405
+
+    @app.errorhandler(500)
+    def error_500(err):
+        logging.debug("Internal server error")
+        return json_response(err=True, message='Internal server error', code=500), 500
     return app
 
 

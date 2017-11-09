@@ -4,4 +4,6 @@ DB_USERNAME = "username"
 DB_PASSWORD = "password"
 METADATA_USERNAME = "name"
 METADATA_PASSWORD = "password"
+API_USERNAME = "name"
+API_PASSWORD = "password"
 SECRET_KEY = 'yoursecretkey'

@@ -1,6 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask import jsonify
+from fm_app import constants
 import os
 import shutil
 import subprocess
@@ -116,5 +117,5 @@ def capitalize_string(val):
 
 
 def json_response(err=False, **kwargs):
-    kwargs.update(dict(err=True if err else False))
+    kwargs.update({constants.API_ERROR_TEXT: True if err else False})
     return jsonify(kwargs)
