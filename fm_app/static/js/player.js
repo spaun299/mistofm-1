@@ -86,7 +86,7 @@ $(document).ready(function() {
     $(".fb-share").on('click', function() {
         cache: false;
         var name = $('#onListen').text();
-        var image = "http://mistofm.com.ua/static/img/logo_400x400.png";
+        var image = "https://mistofm.com.ua/static/img/logo_400x400.png";
 
         if(name!='Misto FM') {
 
@@ -94,7 +94,7 @@ $(document).ready(function() {
 
         name = encodeURIComponent(name);
         image = encodeURIComponent(image);
-        if (image === 'undefined') { image = "http://mistofm.com.ua/static/img/logo_400x400.png"; }
+        if (image === 'undefined') { image = "https://mistofm.com.ua/static/img/logo_400x400.png"; }
 
         var ttt = "https://www.facebook.com/dialog/feed?app_id=535111550164465&display=popup&caption="+encodeURIComponent("Misto Fm ● Lviv ● Deep ")+"&link=http://mistofm.com.ua/";
         var link_text = ttt+"&name="+"&picture="+image;
