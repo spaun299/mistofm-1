@@ -26,8 +26,17 @@ hr {
     margin: 0 0 24px 0;
     width: 100%;
     position: relative;
-    /*bottom: 80px;*/
     bottom: 70px;
+}
+
+.bottom-player-side hr {
+    border: none;
+    border-top: 1px solid #ccc;
+    margin: 0 0 24px 0;
+    width: 100%;
+    position: relative;
+    top: 14px;
+    z-index: 9;
 }
 
 hr.short-thick {
@@ -1901,7 +1910,7 @@ iframe {
 
 @media all and (min-width: 768px) {
     .container .bottom-player-side {
-        bottom: 15px;
+        bottom: 40px;
         height: auto;
     }
 
@@ -1916,7 +1925,8 @@ iframe {
     }
     
     input[type=range] {
-        display: none;
+        /*display: none;*/
+        /*visibility: hidden;*/
     }
 }
 
@@ -1934,17 +1944,17 @@ iframe {
 /*@media Height*/
 @media all and (max-height: 667px) {
     .container .bottom-player-side {
-        /*bottom: 80px;*/
+        bottom: 80px;
     }
 
     .align-bottom hr {
-        /*bottom: 75px;*/
+        bottom: 75px;
     }
 }
 
 @media all and (max-height: 412px) {
     .container .bottom-player-side {
-        /*bottom: 100px;*/
+        bottom: 100px;
     }
 
     .align-bottom hr {
@@ -1954,7 +1964,7 @@ iframe {
 
 @media all and (max-height: 375px) {
     .container .bottom-player-side {
-        /*bottom: 110px;*/
+        bottom: 110px;
     }
 
     .align-bottom hr {
@@ -1964,22 +1974,22 @@ iframe {
 
 @media all and (max-height: 360px) {
     .container .bottom-player-side {
-        /*bottom: 130px;*/
+        bottom: 130px;
     }
 
     .align-bottom hr {
-        /*bottom: 125px;*/
+        bottom: 125px;
     }
 }
 
 @media all and (max-height: 320px) {
     .container .bottom-player-side {
-        /*bottom: 165px;*/
+        bottom: 165px;
         height: auto;
     }
 
     .align-bottom hr {
-        /*bottom: 160px;*/
+        bottom: 160px;
     }
 }
 
@@ -2245,17 +2255,17 @@ footer .btn.active, footer .btn:active {
 }
 
 .bottom-player-side .bottom-player-block .btn-player {
-    top: 34px;
+    top: 38px;
 }
 
 .bottom-player-block .track {
-    top: 42px;
+    top: 44px;
     width: 100%;
 }
 
 .bottom-player-block .social-icons {
     position: relative;
-    top: 26px;
+    top: 30px;
     padding: 8px 0px;
 }
 
@@ -2346,6 +2356,7 @@ footer .btn.active, footer .btn:active {
     width: 50px;
     height: 50px;
     line-height: 19px;
+    text-align: center;
 }
 
 .preloader-squares .square {
