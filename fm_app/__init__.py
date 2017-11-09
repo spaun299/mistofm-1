@@ -18,7 +18,6 @@ from .admin import StationView, ImageView, IndexView, AdminView,\
     StationIcesView, PlaylistView, PlaylistMusicView, MusicView
 import os
 from .errors import IcesException
-import base64
 
 
 def get_base_app():
@@ -119,27 +118,27 @@ def init_app_api():
 
     @app.errorhandler(400)
     def error_400(err):
-        logging.debug("Bad request")
+        app.logger.debug("Bad request")
         return json_response(err=True, message='Bad request', code=400), 400
 
     @app.errorhandler(401)
     def error_401(err):
-        logging.debug("Internal server error")
+        app.logger.warning("Not authorized access")
         return json_response(err=True, message='Not authorized', code=401), 401
 
     @app.errorhandler(404)
     def error_404(err):
-        logging.debug("Page not found")
+        app.logger.debug("Page not found")
         return json_response(err=True, message='Not found', code=404), 404
 
     @app.errorhandler(405)
     def error_405(err):
-        logging.debug("Bad request")
+        app.logger.debug("Bad request")
         return json_response(err=True, message='Method not allowed', code=405), 405
 
     @app.errorhandler(500)
     def error_500(err):
-        logging.debug("Internal server error")
+        app.logger.error("Internal server error.\n%s" % str(err))
         return json_response(err=True, message='Internal server error', code=500), 500
     return app
 
@@ -170,9 +169,12 @@ def get_current_user():
 def configure_logger(app):
     log_handler = TimedRotatingFileHandler(config.LOG_PATH, "midnight",
                                            backupCount=config.LOG_ROTATE_COUNT)
-    log_handler.setLevel(logging.ERROR)
+    log_handler.setLevel(logging.WARNING)
+    formatter = logging.Formatter(
+        '[%(asctime)s] [%(levelname)s] [File:%(name)s] [Message:%(message)s]')
+    log_handler.setFormatter(formatter)
     werkzeug_logger = logging.getLogger('werkzeug')
-    werkzeug_logger.setLevel(logging.ERROR)
+    werkzeug_logger.setLevel(logging.WARNING)
     werkzeug_logger.addHandler(log_handler)
     app.logger.addHandler(log_handler)
 

@@ -26,6 +26,8 @@
 1. Change sqlalchemy.url in alembic.ini file according to server configuration
 1. Add project path to PYTHONPATH:
    * export PYTHONPATH=<path_to_project>
+1. Add health checker to crontab:
+   * /* /* /* /* /* python3 path/to/checker/health_checker.py
 1. Create/upgrade tables for database via alembic:
 
    * alembic --config='/path/to/config/file' upgrade head|revision_id
