@@ -113,20 +113,10 @@ def init_app_admin():
 
 def init_app_api():
     app = get_base_app()
-    app.teardown_request(app_teardown)
-    app.before_request(get_current_user)
+    # app.before_request(get_current_user)
     app.logger.debug("Register blueprints")
     register_blueprints_api(app)
-    login_manager = LoginManager(app)
-    login_manager.request_loader(load_user_api)
-    user_db = SQLAlchemy(app)
-    db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
-                                                 (user_db.Model, User), {}))
-    user_manager = UserManager(db_adapter, app)
-    # disable session cookies
-    app.session_interface = type('SessionInterface',
-                                 (SecureCookieSessionInterface, ),
-                                 {'save_session': lambda *args, **kwargs: None})()
+    app.teardown_request(app_teardown)
 
     @app.errorhandler(404)
     def error_404(err):
@@ -142,6 +132,12 @@ def init_app_api():
     def error_500(err):
         logging.debug("Internal server error")
         return json_response(err=True, message='Internal server error', code=500), 500
+
+    @app.errorhandler(401)
+    def error_401(err):
+        logging.debug("Internal server error")
+        return json_response(err=True, message='Not authorized', code=401), 401
+
     return app
 
 
@@ -162,30 +158,6 @@ def app_teardown(err):
 
 def load_user(_id):
     return g.db.query(User).filter_by(id=int(_id)).one()
-
-
-def load_user_api(request):
-
-    # first, try to login using Basic Auth
-    api_key = request.headers.get('Authorization')
-    if api_key:
-        api_key = api_key.replace('Basic ', '', 1)
-        try:
-            api_key = base64.b64decode(api_key)
-        except TypeError:
-            pass
-        user = g.db.query(User).filter_by(api_key=api_key).first()
-        if user:
-            return user
-    # next, try to login using the api_key url arg
-    api_key = request.args.get('api_key')
-    if api_key:
-        user = g.db.query(User).filter_by(api_key=api_key).first()
-        if user:
-            return user
-
-    # finally, return None if both methods did not login the user
-    return None
 
 
 def get_current_user():
