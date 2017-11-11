@@ -18,7 +18,6 @@ from .admin import StationView, ImageView, IndexView, AdminView,\
     StationIcesView, PlaylistView, PlaylistMusicView, MusicView
 import os
 from .errors import IcesException
-import base64
 
 
 def get_base_app():
@@ -113,34 +112,33 @@ def init_app_admin():
 
 def init_app_api():
     app = get_base_app()
-    app.teardown_request(app_teardown)
-    app.before_request(get_current_user)
     app.logger.debug("Register blueprints")
     register_blueprints_api(app)
-    login_manager = LoginManager(app)
-    login_manager.request_loader(load_user_api)
-    user_db = SQLAlchemy(app)
-    db_adapter = SQLAlchemyAdapter(user_db, type('UserModel',
-                                                 (user_db.Model, User), {}))
-    user_manager = UserManager(db_adapter, app)
-    # disable session cookies
-    app.session_interface = type('SessionInterface',
-                                 (SecureCookieSessionInterface, ),
-                                 {'save_session': lambda *args, **kwargs: None})()
-
-    @app.errorhandler(404)
-    def error_404(err):
-        logging.debug("Page not found")
-        return json_response(err=True, message='Not found', code=404), 404
+    app.teardown_request(app_teardown)
 
     @app.errorhandler(400)
     def error_400(err):
-        logging.debug("Bad request")
+        app.logger.debug("Bad request")
         return json_response(err=True, message='Bad request', code=400), 400
+
+    @app.errorhandler(401)
+    def error_401(err):
+        app.logger.warning("Not authorized access")
+        return json_response(err=True, message='Not authorized', code=401), 401
+
+    @app.errorhandler(404)
+    def error_404(err):
+        app.logger.debug("Page not found")
+        return json_response(err=True, message='Not found', code=404), 404
+
+    @app.errorhandler(405)
+    def error_405(err):
+        app.logger.debug("Bad request")
+        return json_response(err=True, message='Method not allowed', code=405), 405
 
     @app.errorhandler(500)
     def error_500(err):
-        logging.debug("Internal server error")
+        app.logger.error("Internal server error.\n%s" % str(err))
         return json_response(err=True, message='Internal server error', code=500), 500
     return app
 
@@ -164,30 +162,6 @@ def load_user(_id):
     return g.db.query(User).filter_by(id=int(_id)).one()
 
 
-def load_user_api(request):
-
-    # first, try to login using Basic Auth
-    api_key = request.headers.get('Authorization')
-    if api_key:
-        api_key = api_key.replace('Basic ', '', 1)
-        try:
-            api_key = base64.b64decode(api_key)
-        except TypeError:
-            pass
-        user = g.db.query(User).filter_by(api_key=api_key).first()
-        if user:
-            return user
-    # next, try to login using the api_key url arg
-    api_key = request.args.get('api_key')
-    if api_key:
-        user = g.db.query(User).filter_by(api_key=api_key).first()
-        if user:
-            return user
-
-    # finally, return None if both methods did not login the user
-    return None
-
-
 def get_current_user():
     g.user = current_user
 
@@ -195,9 +169,12 @@ def get_current_user():
 def configure_logger(app):
     log_handler = TimedRotatingFileHandler(config.LOG_PATH, "midnight",
                                            backupCount=config.LOG_ROTATE_COUNT)
-    log_handler.setLevel(logging.ERROR)
+    log_handler.setLevel(logging.WARNING)
+    formatter = logging.Formatter(
+        '[%(asctime)s] [%(levelname)s] [File:%(name)s] [Message:%(message)s]')
+    log_handler.setFormatter(formatter)
     werkzeug_logger = logging.getLogger('werkzeug')
-    werkzeug_logger.setLevel(logging.ERROR)
+    werkzeug_logger.setLevel(logging.WARNING)
     werkzeug_logger.addHandler(log_handler)
     app.logger.addHandler(log_handler)
 

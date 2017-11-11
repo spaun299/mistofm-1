@@ -1,7 +1,6 @@
 Supported endpoints:
 
 1: Stations status
-
 PATH: /health/stations
 METHOD: GET
 Response example:
@@ -15,3 +14,25 @@ Response example:
     }
   ]
 }
+
+2: Restart all ices modules
+PATH: /station/restart
+METHOD: POST
+Response example:
+{
+  "err": false,
+  "status": "ok"
+}
+
+3: Restart ices module with id
+PATH: /station/restart/<int:id>
+METHOD: POST
+Response example:
+{
+  "err": false,
+  "status": "ok"
+}
+
+Handle errors:
+If there is an error, the server will return json in following format:
+{"error":true, "message":"Not found", code:404}
