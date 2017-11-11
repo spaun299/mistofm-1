@@ -362,6 +362,7 @@ input[type="range"] {
     transition: .8s ease;
     letter-spacing: 1px;
     font-size: 12px;
+    white-space: nowrap;
     opacity: 0.9;
 }
 
@@ -1066,7 +1067,7 @@ nav .add-drop-overview a {
 
 .soc-dropdown .menu > li ul {
     max-width: 160px;
-    padding: 23px 15px;
+    padding: 15px 15px 23px
 }
 
 .nav-open {
@@ -1252,9 +1253,18 @@ nav .add-drop-overview a {
 
     .module.widget-handle {
         border-left: none;
-        border-top: 1px solid #ccc;
+        /*border-top: 1px solid #ccc;*/
         line-height: 40px;
         min-height: 40px;
+    }
+
+    nav.transparent .module.widget-handle.mobile-toggle.toggle-widget-handle {
+        border: none;
+    }
+
+    nav.transparent .module.widget-handle.add-drop-widget-handle {
+        border-top: 1px solid #ccc;
+        border-bottom: 1px solid #ccc;
     }
 
     nav.transparent .module.widget-handle.mobile-toggle.active {
