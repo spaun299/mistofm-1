@@ -409,3 +409,23 @@ class HtmlHeader(Base):
 
     def __repr__(self):
         return self.html_tag
+
+
+class General(Base):
+    __tablename__ = 'general'
+    id = Column(Integer, primary_key=True)
+    mail_main = Column(VARCHAR(30), nullable=False)
+    mail_ads = Column(VARCHAR(30), nullable=False)
+    mail_support = Column(VARCHAR(30), nullable=False)
+    mail_rotation = Column(VARCHAR(30), nullable=False)
+    phone_main = Column(VARCHAR(15))
+    phone_secondary = Column(VARCHAR(15))
+    skype = Column(VARCHAR(50))
+    address = Column(String)
+    copyright_holder_text = Column(String, nullable=False)
+    facebook_link = Column(String, nullable=False)
+    instagram_link = Column(String, nullable=False)
+    soundcloud_link = Column(String, nullable=False)
+    youtube_link = Column(String, nullable=False)
+    playmarket_link = Column(String)
+    appstore_link = Column(String)
