@@ -101,13 +101,16 @@ def get_memory_usage():
     for ms in mem_swap:
         memory = list(filter(bool, str(subprocess.check_output(
             ['bash', '-c', "free -m | grep %s" % ms]),
-            'utf-8').replace("\n", "").split(' ')))[:4]
+            'utf-8').replace("\n", "").split(' ')))
         memory_dict = dict(
             type=ms,
             total=int(memory[1]),
             used=int(memory[2]),
             free=int(memory[3])
         )
+        if ms == "Mem":
+            memory_dict['used'] = memory_dict['used'] - int(memory[6])
+            memory_dict['free'] = memory_dict['free'] + int(memory[6])
         mem_swap_result.append(memory_dict)
     return mem_swap_result
 
