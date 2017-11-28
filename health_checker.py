@@ -28,10 +28,10 @@ try:
         if station['active'] and not station['running']:
             try:
                 restart_ices_req = Request('%s/%s' % (api_ices_restart_url,
-                                                      station['id']))
-                restart_ices_req.add_header(
-                    'Authorization',
-                    'Basic %s:%s' % (config.API_USERNAME, config.API_PASSWORD))
+                                                      station['id']),
+                                           method='POST')
+                restart_ices_req.add_header('Authorization',
+                                            'Basic ' + creds.decode("ascii"))
                 restart_ices_resp = json.loads(str(urlopen(restart_ices_req).read(),
                                                    'utf-8'))
                 if restart_ices_resp.get(constants.API_ERROR_TEXT):

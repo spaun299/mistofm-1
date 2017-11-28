@@ -133,7 +133,7 @@ def init_app_api():
 
     @app.errorhandler(405)
     def error_405(err):
-        app.logger.debug("Bad request")
+        app.logger.debug("Method not allowed")
         return json_response(err=True, message='Method not allowed', code=405), 405
 
     @app.errorhandler(500)
