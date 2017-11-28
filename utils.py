@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import shlex
 import re
+import datetime
 
 
 def get_database_uri(host, username, password, db_name):
@@ -122,3 +123,7 @@ def capitalize_string(val):
 def json_response(err=False, **kwargs):
     kwargs.update({constants.API_ERROR_TEXT: True if err else False})
     return jsonify(kwargs)
+
+
+def current_year():
+    return datetime.datetime.now().year

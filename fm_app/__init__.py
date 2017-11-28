@@ -3,7 +3,6 @@ from flask_admin import Admin
 from flask_admin.menu import MenuLink
 from flask_login import LoginManager, current_user
 from flask_user import UserManager, SQLAlchemyAdapter
-from flask.sessions import SecureCookieSessionInterface
 import config
 from .blueprints import register_blueprints_web, \
     register_blueprints_admin, register_blueprints_api
@@ -11,7 +10,8 @@ from flask_sqlalchemy import SQLAlchemy
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from sqlalchemy import event
-from utils import get_database_uri, get_db_session, capitalize_string, json_response
+from utils import get_database_uri, get_db_session, capitalize_string, \
+    json_response, current_year
 from .models import Station, Image, User, Playlist, PlaylistMusic, Music, \
     StationIces, HtmlHeader
 from .admin import StationView, ImageView, IndexView, AdminView,\
@@ -46,6 +46,7 @@ def init_app_web():
     register_blueprints_web(app)
     app.teardown_request(app_teardown)
     app.jinja_env.globals.update(capitalize_string=capitalize_string)
+    app.jinja_env.globals.update(current_year=current_year)
 
     @app.errorhandler(404)
     def handle_404(err):
