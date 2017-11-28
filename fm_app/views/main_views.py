@@ -25,3 +25,13 @@ def station(name=None):
                            stations=[st.name for st in stations],
                            html_tags=[Markup(tag.html_tag) for tag in
                                       html_tags])
+
+
+@index_blueprint.route('/contact_us')
+def contact_us():
+    stations = g.db.query(Station).all()
+    html_tags = g.db.query(HtmlHeader).all()
+    return render_template('contact.html',
+                           stations=[st.name for st in stations],
+                           html_tags=[Markup(tag.html_tag) for tag in
+                                      html_tags])

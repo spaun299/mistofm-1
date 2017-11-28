@@ -104,7 +104,7 @@
                 <div class="module left">
                     <ul class="menu">
                         {% for station_name in stations %}
-                        <li class="menu-link {% if station_name == station.name %}active{% endif %}">
+                        <li class="menu-link {% if station is defined and station_name == station.name %}active{% endif %}">
                             <a href="{{ url_for('index.station', name=station_name) }}">{{ station_name }}
                             </a>
                         </li>

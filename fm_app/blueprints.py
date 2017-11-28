@@ -10,7 +10,7 @@ api_station_bp = Blueprint('api_station', __name__)
 
 
 def register_blueprints_web(app):
-    from .views import index_view
+    from .views import main_views
     app.register_blueprint(index_blueprint, url_prefix='')
     app.register_blueprint(static_blueprint)
 
