@@ -113,11 +113,11 @@ $(document).ready(function() {
     }));
 });
 
-var mr_firstSectionHeight, mr_nav, mr_fixedAt, mr_navOuterHeight, mr_navScrolled = !1, mr_navFixed = !1, mr_outOfSight = !1, mr_floatingProjectSections, mr_scrollTop = 0;
+var mr_nav, mr_fixedAt, mr_navOuterHeight, mr_navScrolled = !1, mr_navFixed = !1, mr_outOfSight = !1, mr_scrollTop = 0;
 
 function getCurrentTimeInSeconds(){
     return new Date().getTime() / 1000;
-};
+}
 function updateNav() {
     var a = mr_scrollTop;
     if (0 >= a)
@@ -143,4 +143,158 @@ function updateNav() {
         mr_navScrolled && (mr_navScrolled = !1,
         mr_nav.removeClass("scrolled"))
 }
+
+$(document).ready(function() {
+    if (document.querySelector("[data-maps-api-key]") && !document.querySelector(".gMapsAPI") && $("[data-maps-api-key]").length) {
+        var f = document.createElement("script")
+          , g = $("[data-maps-api-key]:first").attr("data-maps-api-key");
+        f.type = "text/javascript",
+        f.src = "https://maps.googleapis.com/maps/api/js?key=" + g + "&callback=initializeMaps",
+        f.className = "gMapsAPI",
+        document.body.appendChild(f)
+    }
+});
+
+window.initializeMaps = function() {
+    "undefined" != typeof google && "undefined" != typeof google.maps && $(".map-canvas[data-maps-api-key]").each(function() {
+        var a, b, c, d = this, e = "undefined" != typeof $(this).attr("data-map-style") ? $(this).attr("data-map-style") : !1, f = JSON.parse(e) || [{
+            featureType: "landscape",
+            stylers: [{
+                saturation: -100
+            }, {
+                lightness: 65
+            }, {
+                visibility: "on"
+            }]
+        }, {
+            featureType: "poi",
+            stylers: [{
+                saturation: -100
+            }, {
+                lightness: 51
+            }, {
+                visibility: "simplified"
+            }]
+        }, {
+            featureType: "road.highway",
+            stylers: [{
+                saturation: -100
+            }, {
+                visibility: "simplified"
+            }]
+        }, {
+            featureType: "road.arterial",
+            stylers: [{
+                saturation: -100
+            }, {
+                lightness: 30
+            }, {
+                visibility: "on"
+            }]
+        }, {
+            featureType: "road.local",
+            stylers: [{
+                saturation: -100
+            }, {
+                lightness: 40
+            }, {
+                visibility: "on"
+            }]
+        }, {
+            featureType: "transit",
+            stylers: [{
+                saturation: -100
+            }, {
+                visibility: "simplified"
+            }]
+        }, {
+            featureType: "administrative.province",
+            stylers: [{
+                visibility: "off"
+            }]
+        }, {
+            featureType: "water",
+            elementType: "labels",
+            stylers: [{
+                visibility: "on"
+            }, {
+                lightness: -25
+            }, {
+                saturation: -100
+            }]
+        }, {
+            featureType: "water",
+            elementType: "geometry",
+            stylers: [{
+                hue: "#ffff00"
+            }, {
+                lightness: -25
+            }, {
+                saturation: -97
+            }]
+        }], g = "undefined" != typeof $(this).attr("data-map-zoom") && "" !== $(this).attr("data-map-zoom") ? 1 * $(this).attr("data-map-zoom") : 17, h = "undefined" != typeof $(this).attr("data-latlong") ? $(this).attr("data-latlong") : !1, i = h ? 1 * h.substr(0, h.indexOf(",")) : !1, j = h ? 1 * h.substr(h.indexOf(",") + 1) : !1, k = new google.maps.Geocoder, l = "undefined" != typeof $(this).attr("data-address") ? $(this).attr("data-address").split(";") : [""], m = "We Are Here", n = $(document).width() > 766 ? !0 : !1, o = {
+            draggable: n,
+            scrollwheel: !1,
+            zoom: g,
+            disableDefaultUI: !0,
+            styles: f
+        };
+        void 0 != $(this).attr("data-marker-title") && "" != $(this).attr("data-marker-title") && (m = $(this).attr("data-marker-title")),
+        void 0 != l && "" != l[0] ? k.geocode({
+            address: l[0].replace("[nomarker]", "")
+        }, function(a, b) {
+            if (b == google.maps.GeocoderStatus.OK) {
+                var e = new google.maps.Map(d,o);
+                e.setCenter(a[0].geometry.location),
+                l.forEach(function(a) {
+                    var b;
+                    if (c = {
+                        url: void 0 == window.mr_variant ? "img/gmap_marker.png" : "../img/gmap_marker.png",
+                        size: new google.maps.Size(50,50),
+                        scaledSize: new google.maps.Size(50,50)
+                    },
+                    /(\-?\d+(\.\d+)?),\s*(\-?\d+(\.\d+)?)/.test(a))
+                        var d = a.split(",")
+                          , f = new google.maps.Marker({
+                            position: {
+                                lat: 1 * d[0],
+                                lng: 1 * d[1]
+                            },
+                            map: e,
+                            icon: c,
+                            title: m,
+                            optimised: !1
+                        });
+                    else
+                        a.indexOf("[nomarker]") < 0 && (b = new google.maps.Geocoder,
+                        b.geocode({
+                            address: a.replace("[nomarker]", "")
+                        }, function(a, b) {
+                            b == google.maps.GeocoderStatus.OK && (f = new google.maps.Marker({
+                                map: e,
+                                icon: c,
+                                title: m,
+                                position: a[0].geometry.location,
+                                optimised: !1
+                            }))
+                        }))
+                })
+            }
+        }) : void 0 != i && "" != i && 0 != i && void 0 != j && "" != j && 0 != j && (o.center = {
+            lat: i,
+            lng: j
+        },
+        a = new google.maps.Map(d,o),
+        b = new google.maps.Marker({
+            position: {
+                lat: i,
+                lng: j
+            },
+            map: a,
+            icon: c,
+            title: m
+        }))
+    })
+},
+initializeMaps();
 
