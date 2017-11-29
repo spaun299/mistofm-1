@@ -1,12 +1,12 @@
 from flask_admin.contrib.sqla import ModelView
-from wtforms.validators import NumberRange, DataRequired
+from wtforms.validators import NumberRange, DataRequired, Length
 from flask_admin.form.rules import Field
 from flask_admin.base import AdminIndexView
 from flask_admin.contrib.sqla.ajax import QueryAjaxModelLoader
 from flask_admin import expose
 from sqlalchemy.exc import IntegrityError
 from flask import Markup, g, flash, current_app as app, redirect, url_for
-from wtforms.fields.simple import PasswordField
+from wtforms.fields.simple import PasswordField, StringField, TextAreaField
 import config
 from utils import get_db_session, get_database_uri, get_disc_space, \
     get_memory_usage, file_exists
@@ -19,6 +19,8 @@ from flask_admin.helpers import get_url
 from flask_admin.form.upload import ImageUploadField, FileUploadField
 from flask_admin._compat import urljoin
 from .errors import IcesException, PlaylistException
+from wtforms.fields.html5 import TelField, EmailField, URLField
+from wtforms import Form
 import re
 
 
@@ -444,3 +446,27 @@ class ImageView(AdminView):
     column_formatters = {
         "image_url": AdminView._image_preview
     }
+
+
+class GeneralForm(Form):
+    mail_main = EmailField('Email Main', [DataRequired(), Length(30)])
+    mail_ads = EmailField('Email Advertisement', [DataRequired(), Length(30)])
+    mail_support = EmailField('Email Support', [DataRequired(), Length(30)])
+    mail_rotation = EmailField('Email Rotation', [DataRequired(), Length(30)])
+    phone_main = TelField('Phone Main', [Length(15), ])
+    phone_secondary = TelField('Phone Secondary', [Length(15), ])
+    skype = StringField('Skype', [Length(50), ])
+    address = StringField('Address')
+    copyright_holder_text = TextAreaField('Copyright holder text', [DataRequired(), ])
+    facebook_link = URLField('Facebook link', [DataRequired(), ])
+    instagram_link = URLField('Instagram link', [DataRequired(), ])
+    soundcloud_link = URLField('Soundcloud link', [DataRequired(), ])
+    youtube_link = URLField('Youtube link', [DataRequired(), ])
+    playmarket_link = URLField('Playmarket link')
+    appstore_link = URLField('Appstore link')
+
+
+class GeneralView(AdminView):
+    form = GeneralForm
+    can_delete = False
+    can_create = False

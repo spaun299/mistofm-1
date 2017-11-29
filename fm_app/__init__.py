@@ -13,9 +13,9 @@ from sqlalchemy import event
 from utils import get_database_uri, get_db_session, capitalize_string, \
     json_response, current_year
 from .models import Station, Image, User, Playlist, PlaylistMusic, Music, \
-    StationIces, HtmlHeader
+    StationIces, HtmlHeader, General
 from .admin import StationView, ImageView, IndexView, AdminView,\
-    StationIcesView, PlaylistView, PlaylistMusicView, MusicView
+    StationIcesView, PlaylistView, PlaylistMusicView, MusicView, GeneralView
 import os
 from .errors import IcesException
 
@@ -107,6 +107,7 @@ def init_app_admin():
     admin.add_view(StationIcesView(StationIces, db_session))
     admin.add_view(PlaylistMusicView(PlaylistMusic, db_session))
     admin.add_view(AdminView(HtmlHeader, db_session))
+    admin.add_view(GeneralView(General, db_session))
     admin.add_link(MenuLink(name='Logout', category='', url="/logout"))
     return app
 

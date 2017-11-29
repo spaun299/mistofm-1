@@ -1,7 +1,6 @@
 from ..blueprints import index_blueprint
 from flask import render_template, g, abort, Markup
-from ..models import Station, HtmlHeader
-from flask import Markup
+from ..models import Station, HtmlHeader, General
 
 
 @index_blueprint.route('/')
@@ -21,17 +20,19 @@ def station(name=None):
     if not station_obj:
         abort(404), 404
     station_obj.description_html = Markup(station_obj.description_html)
+    info = g.db.query(General).one()
     return render_template('index.html', station=station_obj,
                            stations=[st.name for st in stations],
                            html_tags=[Markup(tag.html_tag) for tag in
-                                      html_tags])
+                                      html_tags], info=info)
 
 
 @index_blueprint.route('/contact_us')
 def contact_us():
     stations = g.db.query(Station).all()
     html_tags = g.db.query(HtmlHeader).all()
+    info = g.db.query(General).one()
     return render_template('contact.html',
                            stations=[st.name for st in stations],
                            html_tags=[Markup(tag.html_tag) for tag in
-                                      html_tags])
+                                      html_tags], info=info)
