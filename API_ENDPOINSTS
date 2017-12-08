@@ -21,7 +21,9 @@ METHOD: POST
 Response example:
 {
   "err": false,
-  "status": "ok"
+  [
+  "name": "Deep",
+  "stream_url"
 }
 
 3: Restart ices module with id
@@ -31,6 +33,21 @@ Response example:
 {
   "err": false,
   "status": "ok"
+}
+
+4: Active stations
+PATH: /station
+METHOD: GET
+Response example:
+{
+  "err": false,
+  "stations": [
+    {
+      "name": "Deep",
+      "stream_url": "https://stream.mistofm.com.ua/deep",
+      "metadata_url": "https://metadata.mistofm.com.ua/metadata/get/3",
+    }
+  ]
 }
 
 Handle errors:

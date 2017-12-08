@@ -1,9 +1,22 @@
 from ..blueprints import api_station_bp
-from ..models import StationIces
+from ..models import StationIces, Station
 from flask import abort
 from flask import g
 from ..decorators import authorization_required_api
 from utils import json_response
+
+
+# get list of active stations
+@api_station_bp.route('/', methods=['GET', ])
+def station_list():
+    stations = []
+    for station in g.db.query(Station).all():
+        stations.append(dict(
+            name=station.name,
+            stream_url=station.stream_url_free_channel,
+            metadata_url=station.metadata_url
+        ))
+    return json_response(stations=stations)
 
 
 @api_station_bp.route('/restart', methods=['POST', ])
