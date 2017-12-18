@@ -50,6 +50,34 @@ Response example:
   ]
 }
 
+5: General info:
+PATH: /info/general
+METHOD: GET
+Response example:
+{
+  "err": false,
+  "stations": [
+    {
+     "mail_main":"mail@mistofm.com.ua",
+     "mail_ads":"ads@mistofm.com.ua",
+     "mail_support":"support@mistofm.com.ua",
+     "mail_rotation":"rotation@mistofm.com.ua",
+     "phone_main":"0320000",
+     "phone_secondary":"0320001",
+     "skype":"misto-skype",
+     "address":"Lviv, ...",
+     "facebook_link":"http://facebook",
+     "instagram_link":"http://insta",
+     "soundcloud_link":"http://soundcloud",
+     "youtube_link":"http://youtube",
+     "playmarket_link":"http://playmarket",
+     "appstore_link":"http://appstore",
+     "android_current_version":0.1,
+     "ios_current_version":1.2
+    }
+  ]
+}
+
 Handle errors:
 If there is an error, the server will return json in following format:
 {"error":true, "message":"Not found", code:404}

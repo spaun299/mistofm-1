@@ -1,7 +1,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, VARCHAR, ForeignKey, \
-    String, Boolean, DateTime, Table, UniqueConstraint
+    String, Boolean, DateTime, Table, UniqueConstraint, Float
 from flask import flash, current_app
 import datetime
 import config
@@ -146,9 +146,13 @@ class Music(Base):
 
     def delete_song(self):
         try:
-            delete_file(config.MUSIC_PATH + self.song_name)
+            delete_file(self.get_song_path(self.song_name))
         except OSError:
             pass
+
+    @staticmethod
+    def get_song_path(song_name):
+        return config.MUSIC_PATH + song_name
 
 
 class StationIces(Base):
@@ -429,3 +433,5 @@ class General(Base):
     youtube_link = Column(String, nullable=False)
     playmarket_link = Column(String)
     appstore_link = Column(String)
+    android_current_version = Column(Float, default=0.1)
+    ios_current_version = Column(Float, default=0.1)
